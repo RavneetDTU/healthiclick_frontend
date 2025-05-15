@@ -68,12 +68,12 @@ export function SignupForm() {
             required
           />
         </div>
-        <button type="submit" className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-500">
+        <button type="submit" className="w-full bg-orange-300 text-black py-2 rounded hover:bg-orange-200">
           Sign Up
         </button>
         <p className="text-center text-sm">
           Already have an account?{" "}
-          <Link href="/feature/login" className="text-blue-600 hover:underline">
+          <Link href="/feature/login" className="text-amber-600 underline">
             Login
           </Link>
         </p>

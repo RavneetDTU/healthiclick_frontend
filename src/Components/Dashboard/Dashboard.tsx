@@ -9,6 +9,8 @@ import { Status } from "./type";
 import { FollowupTable } from "@/shared/atoms/FollowupTable";
 import avtarImage from "@/images/assets/profile_avtar.png";
 import { Footer } from "@/shared/atoms/Footer";
+import { PlansTable } from "@/shared/atoms/PlanTable";
+import { SessionTable } from "@/shared/atoms/CreateSession";
 
 const Dashboard = () => {
   const { sessions, orders, customers, followups, setDashboardData } =
@@ -51,7 +53,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-[#fef7f2]">
       <Header />
 
-      <div className="flex h-[calc(100vh-64px)]">
+      <div className="flex">
         <Sidebar />
         <main className="p-6 overflow-y-auto w-full ">
           <h2 className="text-3xl font-bold mb-6">Dashboard</h2>
@@ -62,22 +64,21 @@ const Dashboard = () => {
               change="+3% from last month"
             />
             <MetricCard
-              title="Number of Orders"
+              title="Number of Clients"
               value={orders}
-              change="+3% from last month"
+              change="+5% from last month"
             />
             <MetricCard
-              title="End Month Customers"
+              title="End Month Clients"
               value={customers}
-              change="+3% from last month"
+              change="+8% from last month"
             />
           </div>
 
           <div className="flex flex-col gap-10">
             <FollowupTable title="Today's Followup" followups={followups} />
-            <FollowupTable title="Today's Session" followups={followups} />
-            <FollowupTable title="New Payment" followups={followups} />
-            <FollowupTable title="Program Expiring" followups={followups} />
+            <PlansTable/>
+            <SessionTable/>
           </div>
         </main>
       </div>
