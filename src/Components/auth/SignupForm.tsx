@@ -22,7 +22,7 @@ export function SignupForm() {
   return (
     <div className="w-full max-w-md mx-auto p-6 shadow-md bg-white rounded-md">
       <h2 className="text-2xl font-bold mb-2">Sign Up</h2>
-      <p className="text-sm mb-4 text-gray-600">Join HealthiClick's vibrant community today</p>
+      <p className="text-sm mb-4 text-gray-600">Join HealthiClick`s vibrant community today</p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label>Name</label>
