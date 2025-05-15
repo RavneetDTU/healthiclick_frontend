@@ -32,7 +32,7 @@ export const ExercisePage = () => {
     <div className="min-h-screen bg-[#fef7f2]">
       <Header />
 
-      <div className="flex h-[calc(100vh-64px)]"> 
+      <div className="flex"> 
         <Sidebar />
 
         <div className="flex-1 overflow-hidden">
