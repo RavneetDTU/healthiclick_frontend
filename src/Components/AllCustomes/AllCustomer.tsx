@@ -4,17 +4,17 @@ import React, { useEffect } from "react";
 import { Header } from "@/shared/atoms/Header";
 import { Sidebar } from "@/shared/atoms/Sidebar";
 import { MetricCard } from "@/shared/atoms/MatricCard";
-import { useDashboardStore } from "./store/dashboardStore";
+import { useCustomerStore } from "./store/AllCustomerStore";
 import { Status } from "./type";
 import { FollowupTable } from "@/shared/atoms/FollowupTable";
 import avtarImage from "@/images/assets/profile_avtar.png";
 import { Footer } from "@/shared/atoms/Footer";
 import { PlansTable } from "@/shared/atoms/PlanTable";
-import { SessionTable } from "@/shared/atoms/CreateSession";
+import { CreateSession } from "@/shared/atoms/CreateSession";
 
-const Dashboard = () => {
+const AllCustomer = () => {
   const { sessions, orders, customers, followups, setDashboardData } =
-    useDashboardStore();
+    useCustomerStore();
 
   useEffect(() => {
     // mock fetching data
@@ -54,10 +54,13 @@ const Dashboard = () => {
       <Header />
 
       <div className="flex">
-        <Sidebar />
+      <div className="hidden md:block">
+       <Sidebar />
+       </div>
+       
         <main className="p-6 overflow-y-auto w-full ">
           <h2 className="text-3xl font-bold mb-6">Dashboard</h2>
-          <div className="grid grid-cols-3 gap-6 mb-8">
+          <div className="grid md:grid-cols-3 gap-6 mb-8 sm:grid-cols-1 text-center md:text-start">
             <MetricCard
               title="Today's Session"
               value={sessions}
@@ -78,7 +81,7 @@ const Dashboard = () => {
           <div className="flex flex-col gap-10">
             <FollowupTable title="Today's Followup" followups={followups} />
             <PlansTable/>
-            <SessionTable/>
+            <CreateSession />
           </div>
         </main>
       </div>
@@ -88,4 +91,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default AllCustomer;

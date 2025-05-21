@@ -2,19 +2,19 @@ import React from 'react';
 import Link from 'next/link';
 
 const navItems = [
-  { label: 'Customers', href: '#' },
+  { label: 'Customers', href: '/feature/allCustomer' },
   { label: 'All Leads', href: '#' },
   { label: 'Tasks', href: '#' },
   { label: 'Dashboard', href: '/feature/dashboard' },
   { label: 'Sessions', href: '#' },
   { label: 'Diet Plan', href: '/feature/dietPlan' },
   { label: 'Exercise', href: '/feature/exercise' },
-  { label: 'Reports', href: '#' },
+  { label: 'Reports', href: '/feature/reports' },
 ];
 
 export const Sidebar = () => {
   return (
-    <aside className="w-56 min-h-screen flex flex-col items-center bg-white shadow-md shadow-gray-500 p-4">
+    <aside className="w-56 h-full flex flex-col items-center bg-white shadow-md shadow-gray-500 p-4">
       <div className="mb-8">
         <h2 className="text-xs text-gray-500 mb-2">YOU</h2>
         {navItems.slice(0, 3).map((item) => (

@@ -46,7 +46,10 @@ export const DietPlan = () => {
       <Header />
 
       <div className="flex flex-col lg:flex-row">
-        <Sidebar />
+      <div className="hidden md:block">
+       <Sidebar />
+       </div>
+       
         <main className="p-4 sm:p-6 overflow-y-auto w-full">
           <h2 className="text-2xl sm:text-3xl font-bold mb-4">Diet Plan</h2>
 
