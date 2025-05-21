@@ -33,7 +33,9 @@ export const ExercisePage = () => {
       <Header />
 
       <div className="flex"> 
-        <Sidebar />
+      <div className="hidden md:block">
+       <Sidebar />
+       </div>
 
         <div className="flex-1 overflow-hidden">
           <main className="p-6 overflow-y-auto h-full">
@@ -54,24 +56,24 @@ export const ExercisePage = () => {
               </select>
             </div>
 
-            <div className="bg-white rounded shadow p-4">
+            <div className="bg-white rounded shadow p-4 overflow-scroll">
               <h3 className="text-xl font-semibold mb-4">Exercise Table</h3>
-              <table className="table-auto w-full text-sm">
+              <table className="table-auto w-full text-sm overflow-x-auto">
                 <thead className="text-left border-b">
                   <tr>
-                    <th className="px-2 py-2">Exercise Name</th>
-                    <th className="px-2 py-2">Duration</th>
-                    <th className="px-2 py-2">Video Link</th>
-                    <th className="px-2 py-2"></th>
-                    <th className="px-2 py-2"></th>
+                    <th className="px-2 py-2 whitespace-nowrap">Exercise Name</th>
+                    <th className="px-2 py-2 whitespace-nowrap">Duration</th>
+                    <th className="px-2 py-2 whitespace-nowrap">Video Link</th>
+                    <th className="px-2 py-2 whitespace-nowrap"></th>
+                    <th className="px-2 py-2 whitespace-nowrap"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {exercises.map((ex, index) => (
                     <tr key={index} className="border-b hover:bg-slate-100">
-                      <td className="px-2 py-2">{ex.name}</td>
-                      <td className="px-2 py-2">{ex.duration}</td>
-                      <td className="px-2 py-2">
+                      <td className="px-2 py-2 whitespace-nowrap">{ex.name}</td>
+                      <td className="px-2 py-2 whitespace-nowrap">{ex.duration}</td>
+                      <td className="px-2 py-2 whitespace-nowrap">
                         <a
                           href={ex.videoUrl}
                           target="_blank"
@@ -81,10 +83,10 @@ export const ExercisePage = () => {
                           {ex.videoUrl}
                         </a>
                       </td>
-                      <td className="text-green-500 text-xl px-2 py-2">
+                      <td className="text-green-500 text-xl px-2 py-2 whitespace-nowrap">
                         <FaCheck />
                       </td>
-                      <td className="text-red-500 text-xl px-2 py-2">
+                      <td className="text-red-500 text-xl px-2 py-2 whitespace-nowrap">
                         <ImCross />
                       </td>
                     </tr>

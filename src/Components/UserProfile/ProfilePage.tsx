@@ -12,7 +12,10 @@ export default function ProfilePage() {
       <Header />
 
       <div className="flex ">
-        <Sidebar />
+      <div className="hidden md:block">
+       <Sidebar />
+       </div>
+       
         <div className="w-full bg-gray-50 dark:bg-gray-900">
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="space-y-6">

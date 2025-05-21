@@ -9,7 +9,7 @@ interface Plan {
   email: string;
   phone: string;
   avatarImage: {
-        url: string | StaticImageData;
+    url: string | StaticImageData;
     alt?: string;
   };
   sessionStatus: "Expiring Soon" | "Active" | "Expired";
@@ -29,7 +29,7 @@ const mockPlans: Plan[] = [
     name: "Bob Smith",
     email: "bob@example.com",
     phone: "321-654-0987",
-    avatarImage: { url: avtarImage},
+    avatarImage: { url: avtarImage },
     sessionStatus: "Active",
   },
   {
@@ -37,7 +37,7 @@ const mockPlans: Plan[] = [
     name: "Carol Williams",
     email: "carol@example.com",
     phone: "987-654-3210",
-    avatarImage: { url: avtarImage},
+    avatarImage: { url: avtarImage },
     sessionStatus: "Expired",
   },
   {
@@ -45,12 +45,12 @@ const mockPlans: Plan[] = [
     name: "David Brown",
     email: "david@example.com",
     phone: "456-789-1234",
-    avatarImage: { url: avtarImage},
+    avatarImage: { url: avtarImage },
     sessionStatus: "Expiring Soon",
   },
 ];
 
-export const SessionTable: React.FC = () => {
+export const CreateSession: React.FC = () => {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<
     "All" | "Active" | "Expiring Soon" | "Expired"
@@ -74,16 +74,16 @@ export const SessionTable: React.FC = () => {
     });
 
   return (
-    <div className="bg-white p-6 rounded shadow shadow-gray-500">
-      <h3 className="text-xl font-semibold mb-4">Create Sessions</h3>
+    <div className="bg-white p-4 sm:p-6 rounded shadow shadow-gray-500">
+      <h3 className="text-lg sm:text-xl font-semibold mb-4">Plans</h3>
 
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <input
           type="text"
           placeholder="Search by name..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-1 w-64"
+          className="border border-gray-300 rounded px-3 py-2 w-full sm:w-64"
         />
 
         <select
@@ -93,7 +93,7 @@ export const SessionTable: React.FC = () => {
               e.target.value as "All" | "Active" | "Expiring Soon" | "Expired"
             )
           }
-          className="border border-gray-300 rounded px-3 py-1"
+          className="border border-gray-300 rounded px-3 py-2 w-full sm:w-auto"
         >
           <option value="All">All</option>
           <option value="Expiring Soon">Expiring Soon</option>
@@ -104,15 +104,14 @@ export const SessionTable: React.FC = () => {
 
       <div className="overflow-x-auto">
         <table className="table-auto w-full text-sm">
-          <thead className="text-left border-b">
+          <thead className="text-left border-b bg-gray-100">
             <tr>
-              <th>Avatar</th>
-              <th>Customer ID</th>
-              <th>Full Name</th>
-              <th>Email</th>
-              <th>Phone No</th>
-
-              <th>Session</th>
+              <th className="px-2 py-2 whitespace-nowrap">Avatar</th>
+              <th className="px-2 py-2 whitespace-nowrap">Customer ID</th>
+              <th className="px-2 py-2 whitespace-nowrap">Full Name</th>
+              <th className="px-2 py-2 whitespace-nowrap">Email</th>
+              <th className="px-2 py-2 whitespace-nowrap">Phone No</th>
+              <th className="px-2 py-2 whitespace-nowrap">Session</th>
             </tr>
           </thead>
           <tbody>
@@ -122,20 +121,20 @@ export const SessionTable: React.FC = () => {
                 onClick={() => router.push("/feature/userProfile")}
                 className="border-b hover:bg-gray-50 cursor-pointer"
               >
-                  <td className="px-2 py-2" onClick={() => router.push("/feature/userProfile")}>
-                    <NextImage
-                      src={plan.avatarImage.url}
-                      alt={plan.avatarImage.alt || "avatar"}
-                      height={0}
-                      width={0}
-                      className="w-8 h-8 rounded-full"
-                    />
-                  </td>
-                  <td className="p-2" onClick={() => router.push("/feature/userProfile")}>{plan.id}</td>
-                  <td className="p-2" onClick={() => router.push("/feature/userProfile")}>{plan.name}</td>
-                  <td className="p-2" onClick={() => router.push("/feature/userProfile")}>{plan.email}</td>
-                  <td className="p-2" onClick={() => router.push("/feature/userProfile")}>{plan.phone}</td>
-                <td className="p-2 font-medium">
+                <td className="px-2 py-2 whitespace-nowrap">
+                  <NextImage
+                    src={plan.avatarImage.url}
+                    alt={plan.avatarImage.alt || "avatar"}
+                    height={32}
+                    width={32}
+                    className="w-8 h-8 rounded-full"
+                  />
+                </td>
+                <td className="px-2 py-2 whitespace-nowrap">{plan.id}</td>
+                <td className="px-2 py-2 whitespace-nowrap">{plan.name}</td>
+                <td className="px-2 py-2 whitespace-nowrap">{plan.email}</td>
+                <td className="px-2 py-2 whitespace-nowrap">{plan.phone}</td>
+                <td className="px-2 py-2 whitespace-nowrap font-medium">
                   <span
                     className={`px-2 py-1 rounded text-xs ${
                       plan.sessionStatus === "Expiring Soon"
