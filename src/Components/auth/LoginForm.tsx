@@ -3,7 +3,8 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { useAuthStore } from "./store/auth-store"
+import { useAuthStore } from "./store/auth-store";
+import { post } from "@/utils/api";
 
 export function LoginForm() {
   const [email, setEmail] = useState("")
@@ -12,18 +13,28 @@ export function LoginForm() {
   const router = useRouter()
   const setUser = useAuthStore((state) => state.setUser)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit =async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
 
-    // Dummy hardcoded credentials
-    if (email === "admin@example.com" && password === "admin123") {
-      setUser({ id: "1", name: "Admin", email })
+    try {
+      const response = await post<{ token: string; user: { id: string; name: string; email: string } }>(
+        "/login",
+        { email, password }
+      )
+
+      localStorage.setItem("token", response.token)
+      setUser(response.user)
       router.push("/feature/dashboard")
       router.refresh()
-    } else {
-      setError("Invalid email or password")
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unexpected error occurred")
+      }
     }
+
   }
 
   return (
