@@ -22,6 +22,7 @@ export interface Meal {
   quantity: string
   recipe: string
   date: string
+  label?: string
 }
 
 export interface Exercise {
@@ -40,7 +41,8 @@ export interface Appointment {
 }
 
 interface DialogState {
-  meal: boolean
+  mealSeprate: boolean
+  mealDoc: boolean
   exercise: boolean
 }
 
@@ -133,7 +135,8 @@ export const useProfileStore = create<ProfileState>((set) => ({
   exercises: mockExercises,
   appointments: mockAppointments,
   dialogOpen: {
-    meal: false,
+    mealSeprate: false,
+    mealDoc: false,
     exercise: false,
   },
   setDialogOpen: (type, isOpen) =>
