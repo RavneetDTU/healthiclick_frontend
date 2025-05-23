@@ -6,7 +6,7 @@ const navItems = [
   { label: 'All Leads', href: '#' },
   { label: 'Tasks', href: '#' },
   { label: 'Dashboard', href: '/feature/dashboard' },
-  { label: 'Sessions', href: '#' },
+  { label: 'Sessions', href: '/feature/session' },
   { label: 'Diet Plan', href: '/feature/dietPlan' },
   { label: 'Exercise', href: '/feature/exercise' },
   { label: 'Reports', href: '/feature/reports' },
