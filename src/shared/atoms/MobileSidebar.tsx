@@ -7,7 +7,7 @@ const navItems = [
   { label: "All Leads", href: "#", group: "YOU" },
   { label: "Tasks", href: "#", group: "YOU" },
   { label: "Dashboard", href: "/feature/dashboard", group: "COMPANY" },
-  { label: "Sessions", href: "#", group: "COMPANY" },
+  { label: "Sessions", href: "/feature/session", group: "COMPANY" },
   { label: "Diet Plan", href: "/feature/dietPlan", group: "COMPANY" },
   { label: "Exercise", href: "/feature/exercise", group: "COMPANY" },
   { label: "Reports", href: "/feature/reports", group: "COMPANY" },
