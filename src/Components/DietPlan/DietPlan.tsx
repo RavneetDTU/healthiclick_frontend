@@ -2,13 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import { useDietPlanStore } from "./store/DietStore";
-import { useProfileStore } from "../UserProfile/store/userProfileStore";
 import { Sidebar } from "@/shared/atoms/Sidebar";
 import { Header } from "@/shared/atoms/Header";
 import { ImCross } from "react-icons/im";
 import { FaCheck } from "react-icons/fa";
 import { Footer } from "@/shared/atoms/Footer";
-import axios from "axios";
 import { Toast } from "../ui/Toast";
 
 interface MealItem {
@@ -31,7 +29,6 @@ const weekDays = [
 ];
 
 export const DietPlan = () => {
-  const { user } = useProfileStore();
   const { weekDay, meals, setWeekDay, setMeals } = useDietPlanStore();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedMeal, setSelectedMeal] = useState<MealItem | null>(null);
@@ -40,55 +37,32 @@ export const DietPlan = () => {
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
   useEffect(() => {
-    const fetchMeals = async () => {
-      const token = localStorage.getItem("token");
-      if (!token || !user?.userid || !weekDay) return;
+    const dummyMeals: MealItem[] = [
+      { id: 1, meal_name: "Oats", quantity: "1 bowl", recipe: "Boil oats with milk", category: "Breakfast" },
+      { id: 2, meal_name: "Grilled Chicken", quantity: "150g", recipe: "Grill with spices", category: "Lunch" },
+      { id: 3, meal_name: "Salad", quantity: "1 bowl", recipe: "Mix veggies", category: "Dinner" },
+    ];
 
-      const weekdayParam = weekDay.toLowerCase();
-      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/diet-plan/${user.userid}?weekday=${weekdayParam}`;
+    const grouped = dummyMeals.reduce((acc, meal) => {
+      const category = meal.category || "Other";
+      if (!acc[category]) acc[category] = [];
+      acc[category].push(meal);
+      return acc;
+    }, {} as Record<string, MealItem[]>);
 
-      try {
-        const response = await axios.get<MealItem[]>(url, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const rawMeals = response.data;
-        const grouped = rawMeals.reduce((acc, meal) => {
-          const category = meal.category || "Other";
-          if (!acc[category]) acc[category] = [];
-          acc[category].push(meal);
-          return acc;
-        }, {} as Record<string, MealItem[]>);
-
-        setMeals(grouped);
-      } catch (error) {
-        console.error("Failed to fetch diet plan:", error);
-      }
-    };
-
-    fetchMeals();
-  }, [weekDay, user?.userid, setMeals]);
+    setMeals(grouped);
+  }, [weekDay, setMeals]);
 
   const handleTrackMeal = async (
     meal_id: number,
     followed: boolean,
     reason: string
   ) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/diet-plan/track`,
-        { meal_id, followed, reason },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setToast({
-        message: followed ? "Diet followed" : "Meal not followed",
-        type: followed ? "success" : "error",
-      });
-    } catch (err) {
-      console.error("Tracking failed:", err);
-      setToast({ message: "Failed to track meal", type: "error" });
-    }
+    console.log("Tracked:", { meal_id, followed, reason });
+    setToast({
+      message: followed ? "Diet followed" : "Meal not followed",
+      type: followed ? "success" : "error",
+    });
   };
 
   const openModal = (meal: MealItem) => {
