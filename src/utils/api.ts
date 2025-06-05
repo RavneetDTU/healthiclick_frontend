@@ -1,18 +1,43 @@
-const BASE_URL = process.env.NEXT_PUBLIC_AUTH_API;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-export async function post<T, D = unknown>(endpoint: string, data: D): Promise<T> {
-    const res = await fetch(`${BASE_URL}${endpoint}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-  
-    if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.message || "Something went wrong");
+export async function post<T, D = Record<string, unknown>>(
+  endpoint: string,
+  data: D,
+  asForm: boolean = false
+): Promise<T> {
+  const url = `${BASE_URL}${endpoint}`;
+
+  const headers: HeadersInit = {
+    "Content-Type": asForm
+      ? "application/x-www-form-urlencoded"
+      : "application/json",
+  };
+
+  const body = asForm
+    ? new URLSearchParams(data as Record<string, string>).toString()
+    : JSON.stringify(data);
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers,
+    body,
+  });
+
+  const raw = await res.text();
+
+  if (!res.ok) {
+    console.error("Raw response:", raw);
+    let message = "Something went wrong";
+
+    try {
+      const parsed = JSON.parse(raw);
+      message = parsed.detail?.[0]?.msg || parsed.message || message;
+    } catch {
+      message = raw;
     }
-  
-    return res.json();
+
+    throw new Error(message);
   }
+
+  return JSON.parse(raw);
+}

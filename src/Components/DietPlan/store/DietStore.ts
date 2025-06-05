@@ -1,8 +1,10 @@
 import { create } from 'zustand';
 
 export interface MealItem {
+  id: number; // ensure it's present
   meal_name: string;
   quantity: string;
+  recipe: string;
 }
 
 export interface DietPlanState {
@@ -22,17 +24,17 @@ export const useDietPlanStore = create<DietPlanState>((set) => ({
     set({
       meals: {
         'Meal 1': [
-          { meal_name: 'fruit Salad', quantity: '100g' },
-          { meal_name: 'pineapple', quantity: '1' },
-          { meal_name: 'fruit Salad', quantity: '100g' },
+          { id:1,  meal_name: 'fruit Salad', quantity: '100g' , recipe: 'Mix of seasonal fruits'},
+          { id:2 , meal_name: 'pineapple', quantity: '1' , recipe: 'Fresh pineapple slices'},
+          {id:3,  meal_name: 'fruit Salad', quantity: '100g', recipe: 'Mix of seasonal fruits'},
         ],
         'Meal 2': [
-          { meal_name: 'pineapple', quantity: '50g' },
-          { meal_name: 'chicken', quantity: '150g' },
+          { id:1 , meal_name: 'pineapple', quantity: '50g', recipe: 'Fresh pineapple slices'},
+          { id:2, meal_name: 'chicken', quantity: '150g', recipe: 'Grilled chicken breast' },
         ],
         'Meal 3': [
-          { meal_name: 'mix veg', quantity: '50g' },
-          { meal_name: 'vegetable and roti', quantity: '200g' },
+          {id:1,  meal_name: 'mix veg', quantity: '50g', recipe: 'Mixed vegetables stir-fry'},
+          {id:2 ,  meal_name: 'vegetable and roti', quantity: '200g', recipe: 'Mixed vegetables with roti' },
         ],
       },
     }),

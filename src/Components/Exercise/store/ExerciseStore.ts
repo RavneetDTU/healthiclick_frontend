@@ -1,35 +1,30 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 export interface Exercise {
-  name: string;
+  exercise_name: string;
   duration: string;
-  videoUrl: string;
+  video_link: string;
+  id: number;
+  user_id: number;
+  weekday: string;
+  created_at: string;
 }
 
 interface ExerciseState {
   weekDay: string;
   exercisesByDay: Record<string, Exercise[]>;
   setWeekDay: (day: string) => void;
-  loadMockExercises: () => void;
+  setExercisesByDay: (
+    updater: (prev: Record<string, Exercise[]>) => Record<string, Exercise[]>
+  ) => void;
 }
 
 export const useExerciseStore = create<ExerciseState>((set) => ({
-  weekDay: 'Monday',
+  weekDay: "Monday",
   exercisesByDay: {},
   setWeekDay: (day) => set({ weekDay: day }),
-  loadMockExercises: () =>
-    set({
-      exercisesByDay: {
-        Monday: [
-          { name: 'Push-ups', duration: '15 mins', videoUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4' },
-          { name: 'Squats', duration: '20 mins', videoUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ' },
-          { name: 'Plank', duration: '10 mins', videoUrl: 'https://www.youtube.com/watch?v=pSHjTRCQxIw' },
-          { name: 'Jumping Jacks', duration: '10 mins', videoUrl: 'https://www.youtube.com/watch?v=c4DAnQ6DtF8' },
-        ],
-        Tuesday: [
-          { name: 'Lunges', duration: '15 mins', videoUrl: 'https://www.youtube.com/watch?v=QOVaHwm-Q6U' },
-        ],
-        // Add other weekdays similarly if needed
-      },
-    }),
+  setExercisesByDay: (updater) =>
+    set((state) => ({
+      exercisesByDay: updater(state.exercisesByDay),
+    })),
 }));

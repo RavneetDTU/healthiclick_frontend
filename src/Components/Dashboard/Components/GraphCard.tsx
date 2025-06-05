@@ -17,7 +17,7 @@ interface GraphCardProps {
   values: number[];
 }
 
-const months = ["January", "February", "March", "April", "May", "June", "July"];
+const months = ["Monday", "Tuesday", "Wednesday", "Thrusday", "Friday", "Saturday", "Sunday"];
 
 export const GraphCard: React.FC<GraphCardProps> = ({ label, values }) => {
   const data = values.map((v, i) => ({ name: months[i], value: v }));

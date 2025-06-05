@@ -8,7 +8,7 @@ import AddExerciseDialog from "./Components/AddExerciseDialog";
 import { Header } from "@/shared/atoms/Header";
 import { Sidebar } from "@/shared/atoms/Sidebar";
 import DocUploadMeal from "./Components/DocMealUpload";
-import { useProfileStore } from "./store/userProfileStore";
+import { useProfileStore } from "@/Components/UserProfile/store/userProfileStore";
 
 export default function ProfilePage() {
   const { dialogOpen } = useProfileStore();
