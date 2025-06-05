@@ -1,14 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useExerciseStore } from "./store/ExerciseStore";
-import { useProfileStore } from "../UserProfile/store/userProfileStore";
 import { Sidebar } from "@/shared/atoms/Sidebar";
 import { Header } from "@/shared/atoms/Header";
 import { FaCheck } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 import { Footer } from "@/shared/atoms/Footer";
-import axios from "axios";
 import { Exercise } from "./store/ExerciseStore";
 
 const weekDays = [
@@ -22,12 +20,9 @@ const weekDays = [
 ];
 
 export const ExercisePage = () => {
-  const { user } = useProfileStore();
   const {
     weekDay,
     setWeekDay,
-    setExercisesByDay,
-    exercisesByDay,
   } = useExerciseStore();
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -35,42 +30,37 @@ export const ExercisePage = () => {
   const [reason, setReason] = useState("");
   const [notes, setNotes] = useState("");
 
-  useEffect(() => {
-    if (!user?.userid || !weekDay) return; 
-  
-    const fetchExercises = async () => {
-      const token = localStorage.getItem("token");
-      if (!token || !user?.userid || !weekDay) {
-        console.warn("Missing token, user ID or weekday");
-        return;
-      }
-  
-      const weekdayParam = weekDay.toLowerCase();
-      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/exercise-plan/${user.userid}?weekday=${weekdayParam}`;
-  
-      try {
-        const response = await axios.get<Exercise[]>(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
-        const rawExercises = response.data;
-  
-        setExercisesByDay((prev) => ({
-          ...prev,
-          [weekdayParam]: rawExercises,
-        }));
-      } catch (error) {
-        console.error("Failed to fetch exercise plan:", error);
-      }
-    };
-  
-    fetchExercises();
-  }, [weekDay, user?.userid, setExercisesByDay]);
-  
+  const dummyExercises: Exercise[] = [
+    {
+      id: 1,
+      user_id: 11,
+      weekday: weekDay,
+      created_at: new Date().toISOString(),
+      exercise_name: "Jumping Jacks",
+      duration: "5 minutes",
+      video_link: "https://www.example.com/video1"
+    },
+    {
+      id: 2,
+      user_id: 12,
+      weekday: weekDay,
+      created_at: new Date().toISOString(),
+      exercise_name: "Push Ups",
+      duration: "10 minutes",
+      video_link: "https://www.example.com/video2"
+    },
+    {
+      id: 3,
+      user_id: 13,
+      weekday: weekDay,
+      created_at: new Date().toISOString(),
+      exercise_name: "Squats",
+      duration: "8 minutes",
+      video_link: "https://www.example.com/video3"
+    }
+  ];
 
-  const exercises: Exercise[] = exercisesByDay[weekDay.toLowerCase()] || [];
+  const exercises: Exercise[] = dummyExercises;
 
   const openModal = (exerciseName: string) => {
     setSelectedExercise(exerciseName);
