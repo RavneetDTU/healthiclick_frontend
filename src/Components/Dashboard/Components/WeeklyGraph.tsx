@@ -1,12 +1,52 @@
-// app/feature/dashboard/components/WeeklyGraphSection.tsx
 "use client";
 
-import React from "react";
-import { useDashboardStore } from "../store/dashboardStore";
+import React, { useEffect, useState } from "react";
 import { GraphCard } from "./GraphCard";
+import axios from "axios";
+
+interface ChartItem {
+  label: string;
+  values: number[];
+}
 
 export const WeeklyGraphSection: React.FC = () => {
-  const { chartData } = useDashboardStore();
+  const [chartData, setChartData] = useState<ChartItem[]>([]);
+
+  useEffect(() => {
+    const fetchChartData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No access token found.");
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/data`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const charts = response.data.charts;
+
+        const formattedCharts: ChartItem[] = [
+          { label: "Step Counter", values: charts.step_counter },
+          { label: "Sleep Counter", values: charts.sleep_counter },
+          { label: "Calorie Counter", values: charts.calorie_counter },
+          { label: "Weight Counter", values: charts.weight_counter },
+        ];
+
+        setChartData(formattedCharts);
+      } catch (err) {
+        console.error("Failed to fetch chart data", err);
+      }
+    };
+
+    fetchChartData();
+  }, []);
 
   return (
     <div className="bg-white p-4 rounded shadow">

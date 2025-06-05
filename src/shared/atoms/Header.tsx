@@ -1,11 +1,47 @@
 "use client"
-import { useState } from "react"
+
+import { useState, useEffect, useRef } from "react"
 import { useDevice } from "@/hooks/useDevice"
 import { MobileSidebar } from "./MobileSidebar"
+import { FiMenu, FiBell, FiUser, FiX } from "react-icons/fi"
+import { useRouter } from "next/navigation"
 
 export const Header = () => {
   const { isDesktop } = useDevice()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [userName, setUserName] = useState<string | null>(null)
+  const [showProfileMenu, setShowProfileMenu] = useState(false)
+  const router = useRouter()
+  const profileRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user")
+    if (storedUser) {
+      try {
+        const parsed = JSON.parse(storedUser)
+        setUserName(parsed.full_name || parsed.name || "User")
+      } catch {
+        setUserName(null)
+      }
+    }
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setShowProfileMenu(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.clear()
+    setUserName(null)
+    router.push("/feature/login")
+  }
 
   return (
     <header className="w-full flex justify-between items-center px-4 py-3 md:px-6 md:py-4 border-b bg-white sticky top-0 z-10">
@@ -16,76 +52,50 @@ export const Header = () => {
             className="mr-2 p-1 rounded-md hover:bg-gray-100 md:hidden"
             aria-label="Open menu"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-5 w-5"
-            >
-              <line x1="4" x2="20" y1="12" y2="12" />
-              <line x1="4" x2="20" y1="6" y2="6" />
-              <line x1="4" x2="20" y1="18" y2="18" />
-            </svg>
+            <FiMenu className="h-5 w-5" />
           </button>
         )}
         <h1 className="text-lg md:text-xl font-bold">Healthiclick</h1>
       </div>
 
-      <div className="flex items-center gap-2 md:gap-6">
+      <div className="flex items-center gap-4 md:gap-6 relative">
         <button className="p-2 rounded-md hover:bg-gray-100 font-medium">
-          {isDesktop ? (
-            "Alerts"
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-5 w-5"
-            >
-              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-            </svg>
-          )}
+          {isDesktop ? "Alerts" : <FiBell className="h-5 w-5" />}
         </button>
-        <button className="p-2 rounded-md hover:bg-gray-100 font-medium">
-          {isDesktop ? (
-            "Profile"
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-5 w-5"
+
+        {userName ? (
+          <div ref={profileRef} className="relative">
+            <button
+              className="p-2 rounded-md hover:bg-gray-100"
+              onClick={() => setShowProfileMenu((prev) => !prev)}
             >
-              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-          )}
-        </button>
+              <FiUser className="h-5 w-5" />
+            </button>
+            {showProfileMenu && (
+              <div className="absolute right-0 top-10 w-40 bg-white shadow-md rounded-md p-3 z-50">
+                <p className="text-sm text-gray-700 mb-2 font-medium truncate">{userName}</p>
+                <button
+                  onClick={handleLogout}
+                  className="w-full bg-red-100 hover:bg-red-200 text-red-700 text-sm py-1 px-2 rounded"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <button
+            className="bg-orange-400 hover:bg-orange-300 text-white px-3 py-1 text-sm rounded"
+            onClick={() => router.push("/login")}
+          >
+            Sign In
+          </button>
+        )}
       </div>
 
-      {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/50 bg-opacity-50 z-50 md:hidden"
+          className="fixed inset-0 bg-black/50 z-50 md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         >
           <div
@@ -99,21 +109,7 @@ export const Header = () => {
                 className="p-1 rounded-md hover:bg-gray-100"
                 aria-label="Close menu"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-5 w-5"
-                >
-                  <path d="M18 6 6 18" />
-                  <path d="m6 6 12 12" />
-                </svg>
+                <FiX className="h-5 w-5" />
               </button>
             </div>
             <MobileSidebar />

@@ -1,153 +1,246 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import { useProfileStore } from "../store/userProfileStore"
-import { useDevice } from "@/hooks/useDevice"
-import { Toast } from "@/Components/ui/Toast"
+import { useState, useEffect, useRef } from "react";
+import { useProfileStore } from "../store/userProfileStore";
+import { Toast } from "@/Components/ui/Toast";
+
+interface MealItem {
+  id: number;
+  meal_name: string;
+  quantity: string;
+  recipe: string;
+}
+
+interface ToastState {
+  message: string;
+  type: "success" | "error";
+}
+
+type MealInput = Omit<MealItem, "id">;
+
+interface MealSection {
+  id: number;
+  sectionName: string;
+  tempSectionName: string;
+  mealTime: string;
+  meals: MealInput[];
+}
 
 export default function AddMealDialog() {
-  const { dialogOpen, setDialogOpen, addMeal } = useProfileStore()
-  const { isMobile } = useDevice()
+  const { dialogOpen, setDialogOpen } = useProfileStore();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const [toast, setToast] = useState<ToastState | null>(null);
+  const [weekday, setWeekday] = useState<string>("monday");
 
-  const [currentMealStep, setCurrentMealStep] = useState(1)
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null)
+  const [sections, setSections] = useState<MealSection[]>(
+    ["Breakfast", "Lunch", "Dinner"].map((name, idx) => ({
+      id: Date.now() + idx,
+      sectionName: name,
+      tempSectionName: name,
+      mealTime: "",
+      meals: [
+        { meal_name: "", quantity: "", recipe: "" },
+        { meal_name: "", quantity: "", recipe: "" },
+      ],
+    }))
+  );
 
-  const [mealData, setMealData] = useState({
-    meal_name: "",
-    quantity: "",
-    recipe: "",
-  })
+  const handleInputChange = (
+    sectionIndex: number,
+    mealIndex: number,
+    field: keyof MealInput,
+    value: string
+  ) => {
+    const updated = [...sections];
+    updated[sectionIndex].meals[mealIndex][field] = value;
+    setSections(updated);
+  };
 
-  const dialogRef = useRef<HTMLDivElement>(null)
+  const handleAddMore = (sectionIndex: number) => {
+    const updated = [...sections];
+    updated[sectionIndex].meals.push({
+      meal_name: "",
+      quantity: "",
+      recipe: "",
+    });
+    setSections(updated);
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setMealData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const showToast = (message: string, type: "success" | "error" = "success") => {
-    setToast({ message, type })
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const label = `Meal ${currentMealStep}`
-
-    addMeal({
-      id: `${Date.now()}-${currentMealStep}`,
-      ...mealData,
-      date: new Date().toISOString(),
-      label
-    })
-
-    showToast(`${label} saved`, "success")
-
-    setMealData({ meal_name: "", quantity: "", recipe: "" })
-
-    if (currentMealStep < 3) {
-      setCurrentMealStep(currentMealStep + 1)
-    } else {
-      setDialogOpen("mealSeprate", false)
-    }
-  }
+  const handleAddSection = () => {
+    setSections([
+      ...sections,
+      {
+        id: Date.now(),
+        sectionName: `Section ${sections.length + 1}`,
+        tempSectionName: `Section ${sections.length + 1}`,
+        mealTime: "",
+        meals: [{ meal_name: "", quantity: "", recipe: "" }],
+      },
+    ]);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
-        setDialogOpen("mealSeprate", false)
+      if (
+        dialogRef.current &&
+        !dialogRef.current.contains(event.target as Node)
+      ) {
+        setDialogOpen("mealSeprate", false);
       }
-    }
+    };
 
     if (dialogOpen.mealSeprate) {
-      document.addEventListener("mousedown", handleClickOutside)
-      document.body.style.overflow = "hidden"
+      document.addEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "hidden";
     }
-
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-      document.body.style.overflow = ""
-    }
-  }, [dialogOpen.mealSeprate, setDialogOpen])
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "";
+    };
+  }, [dialogOpen.mealSeprate, setDialogOpen]);
 
-  if (!dialogOpen.mealSeprate) return null
+  if (!dialogOpen.mealSeprate) return null;
 
   return (
     <>
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
 
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+      <div className="w-full fixed inset-0 bg-black/50 flex justify-center items-center z-50 overflow-y-auto p-4">
         <div
           ref={dialogRef}
-          className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full ${isMobile ? "max-w-[95%]" : "max-w-md"}`}
-          role="dialog"
-          aria-modal="true"
+          className="bg-white rounded-lg shadow-lg w-full max-w-[90%] max-h-screen overflow-y-auto"
         >
-          <form onSubmit={handleSubmit}>
-            <div className="p-4 sm:p-6">
-              <h2 className="text-lg sm:text-xl font-semibold mb-2">Add Meal {currentMealStep}</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium">Meal Name</label>
-                  <input
-                    name="meal_name"
-                    value={mealData.meal_name}
-                    onChange={handleChange}
-                    placeholder="e.g., Grilled Chicken"
-                    required
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md dark:bg-gray-700"
-                  />
+          <h3 className="text-xl font-semibold mb-4 text-center mt-4">
+            Add Meals
+          </h3>
+
+          <div className="mb-4 text-center">
+            <select
+              value={weekday}
+              onChange={(e) => setWeekday(e.target.value)}
+              className="w-40 p-2 border rounded"
+            >
+              {["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].map((day) => (
+                <option key={day} value={day}>
+                  {day.charAt(0).toUpperCase() + day.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="px-6 pb-4">
+            {sections.map((section, sectionIndex) => (
+              <div className="mb-4 pt-4 border-t" key={section.id}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={section.tempSectionName}
+                      onChange={(e) => {
+                        const updated = [...sections];
+                        updated[sectionIndex].tempSectionName = e.target.value;
+                        setSections(updated);
+                      }}
+                      className="text-sm border rounded px-2 py-1 ml-2"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium">Meal Time:</label>
+                    <input
+                      type="time"
+                      value={section.mealTime}
+                      onChange={(e) => {
+                        const updated = [...sections];
+                        updated[sectionIndex].mealTime = e.target.value;
+                        setSections(updated);
+                      }}
+                      className="border px-2 py-1 rounded text-sm"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium">Quantity</label>
-                  <input
-                    name="quantity"
-                    value={mealData.quantity}
-                    onChange={handleChange}
-                    placeholder="e.g., 1 bowl"
-                    required
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md dark:bg-gray-700"
-                  />
+
+                <div className="max-h-36 overflow-y-auto pr-1 space-y-2">
+                  {section.meals.map((input, idx) => (
+                    <div className="flex gap-8" key={idx}>
+                      <input
+                        type="text"
+                        placeholder="Meal name"
+                        value={input.meal_name}
+                        onChange={(e) =>
+                          handleInputChange(
+                            sectionIndex,
+                            idx,
+                            "meal_name",
+                            e.target.value
+                          )
+                        }
+                        className="w-64 p-2 border rounded"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Quantity"
+                        value={input.quantity}
+                        onChange={(e) =>
+                          handleInputChange(
+                            sectionIndex,
+                            idx,
+                            "quantity",
+                            e.target.value
+                          )
+                        }
+                        className="w-52 p-2 border rounded"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Recipe"
+                        value={input.recipe}
+                        onChange={(e) =>
+                          handleInputChange(
+                            sectionIndex,
+                            idx,
+                            "recipe",
+                            e.target.value
+                          )
+                        }
+                        className="flex-1 p-2 border rounded"
+                      />
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium">Recipe</label>
-                  <textarea
-                    name="recipe"
-                    value={mealData.recipe}
-                    onChange={handleChange}
-                    placeholder="Recipe or instructions"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md dark:bg-gray-700 min-h-[100px]"
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-between items-center p-4 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex gap-2">
+
                 <button
-                  type="button"
-                  onClick={() => setCurrentMealStep(Math.max(currentMealStep - 1, 1))}
-                  disabled={currentMealStep === 1}
-                  className="px-3 py-1.5 text-sm border rounded-md bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
+                  className="px-3 py-2 mt-3 bg-blue-500 text-white rounded"
+                  onClick={() => handleAddMore(sectionIndex)}
                 >
-                  Preview
-                </button>
-                <button
-                  type="submit"
-                  className="px-3 py-1.5 text-sm bg-orange-300 text-white rounded-md hover:bg-orange-500"
-                >
-                  {currentMealStep < 3 ? "Next" : "Finish"}
+                  Add More
                 </button>
               </div>
+            ))}
+
+            <div className="flex justify-between mt-6">
               <button
-                type="button"
+                className="px-4 py-2 bg-orange-400 text-white rounded"
                 onClick={() => setDialogOpen("mealSeprate", false)}
-                className="text-sm text-gray-500 hover:underline"
               >
-                Cancel
+                Done
+              </button>
+              <button
+                className="px-4 py-2 bg-green-500 text-white rounded"
+                onClick={handleAddSection}
+              >
+                Add Section
               </button>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </>
-  )
+  );
 }
