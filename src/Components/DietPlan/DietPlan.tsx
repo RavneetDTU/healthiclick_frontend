@@ -2,34 +2,18 @@
 
 import React, { useEffect, useState } from "react";
 import { useDietPlanStore } from "./store/DietStore";
+import { useProfileStore } from "../UserProfile/store/userProfileStore";
 import { Sidebar } from "@/shared/atoms/Sidebar";
 import { Header } from "@/shared/atoms/Header";
 import { ImCross } from "react-icons/im";
 import { FaCheck } from "react-icons/fa";
 import { Footer } from "@/shared/atoms/Footer";
 import { Toast } from "../ui/Toast";
-
-interface MealItem {
-  id: number;
-  meal_name: string;
-  quantity: string;
-  recipe: string;
-  weekday?: string;
-  category?: string;
-}
-
-const weekDays = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
+import { DietSection, MealItem, weekDays } from "./store/DietStore";
 
 export const DietPlan = () => {
   const { weekDay, meals, setWeekDay, setMeals } = useDietPlanStore();
+  const { user } = useProfileStore();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedMeal, setSelectedMeal] = useState<MealItem | null>(null);
   const [reason, setReason] = useState("");
@@ -37,21 +21,53 @@ export const DietPlan = () => {
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
   useEffect(() => {
-    const dummyMeals: MealItem[] = [
-      { id: 1, meal_name: "Oats", quantity: "1 bowl", recipe: "Boil oats with milk", category: "Breakfast" },
-      { id: 2, meal_name: "Grilled Chicken", quantity: "150g", recipe: "Grill with spices", category: "Lunch" },
-      { id: 3, meal_name: "Salad", quantity: "1 bowl", recipe: "Mix veggies", category: "Dinner" },
-    ];
+    const fetchDietPlan = async () => {
+      const token = localStorage.getItem("token");
+      if (!user?.userid || !weekDay) return;
 
-    const grouped = dummyMeals.reduce((acc, meal) => {
-      const category = meal.category || "Other";
-      if (!acc[category]) acc[category] = [];
-      acc[category].push(meal);
-      return acc;
-    }, {} as Record<string, MealItem[]>);
+      try {
+        const res = await fetch(
+          `https://xyz.healthiclick.com/diet-plan/${user.userid}?weekday=${weekDay.toLowerCase()}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-    setMeals(grouped);
-  }, [weekDay, setMeals]);
+        if (!res.ok) {
+          throw new Error("Failed to fetch diet plan");
+        }
+
+        const data: DietSection[] = await res.json();
+
+        const structured = data.reduce((acc: Record<string, MealItem[]>, section: DietSection, index: number) => {
+          const category = section.name || `Section ${index + 1}`;
+          const meals = section.elements.map((el, idx) => ({
+            id: index * 100 + idx,
+            meal_name: el.mealname,
+            quantity: el.quantity,
+            recipe: el.recipe,
+            weekday: section.weekday,
+            category,
+          }));
+          acc[category] = meals;
+          return acc;
+        }, {});
+
+        setMeals(structured);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Diet plan fetch failed:", error);
+          setToast({ message: error.message || "Failed to load meals", type: "error" });
+        } else {
+          setToast({ message: "Unknown error occurred", type: "error" });
+        }
+      }
+    };
+
+    fetchDietPlan();
+  }, [weekDay, user?.userid, setMeals]);
 
   const handleTrackMeal = async (
     meal_id: number,
@@ -128,9 +144,7 @@ export const DietPlan = () => {
                     </div>
                     <div
                       className="text-green-500 text-xl cursor-pointer"
-                      onClick={() =>
-                        handleTrackMeal(item.id, true, "Diet followed")
-                      }
+                      onClick={() => handleTrackMeal(item.id, true, "Diet followed")}
                     >
                       <FaCheck />
                     </div>

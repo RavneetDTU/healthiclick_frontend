@@ -77,7 +77,6 @@ export function LoginForm() {
         dietAdherence: userData.dietAdherence ?? 0,
         exerciseCompletion: userData.exerciseCompletion ?? 0,
         goalProgress: userData.goalProgress ?? 0,
-        membershipType: userData.membershipType || "Premium",
       });
 
       localStorage.setItem("user", JSON.stringify(userData));
