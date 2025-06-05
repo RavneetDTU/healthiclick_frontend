@@ -101,6 +101,80 @@ export default function AddMealDialog() {
 
   if (!dialogOpen.mealSeprate) return null;
 
+  // function to format time to HH:MM format
+  const formatTimeTo12H = (time24: string) => {
+    if (!time24 || !time24.includes(":")) return "12:00 AM";
+
+    const [hoursStr, minutesStr] = time24.split(":");
+    const hours = Number(hoursStr);
+    const minutes = Number(minutesStr);
+
+    if (isNaN(hours) || isNaN(minutes)) return "12:00 AM";
+
+    const period = hours >= 12 ? "PM" : "AM";
+    const formattedHours = (((hours + 11) % 12) + 1)
+      .toString()
+      .padStart(2, "0");
+    return `${formattedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
+  };
+
+  // Calling the API for adding meals
+  const handleSubmitMeals = async () => {
+    const { userid } = useProfileStore.getState().user;
+    const token = localStorage.getItem("token");
+    if (!userid || !token) {
+      setToast({
+        message: "User ID not found or unauthenticated",
+        type: "error",
+      });
+      return;
+    }
+
+    // Copy sections and update sectionName from tempSectionName
+    const cleanedSections = sections.map((section) => ({
+      ...section,
+      sectionName: section.tempSectionName,
+    }));
+
+    const payload = cleanedSections.map((section) => ({
+      name: section.sectionName,
+      time: formatTimeTo12H(section.mealTime),
+      elements: section.meals.map((meal) => ({
+        mealname: meal.meal_name,
+        quantity: meal.quantity,
+        recipe: meal.recipe,
+      })),
+      weekday,
+    }));
+
+    try {
+      const res = await fetch(
+        `https://xyz.healthiclick.com/admin/meals?user_id=${userid}&weekday=${weekday}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await res.json();
+      console.log("Response from server:", data);
+
+      if (!res.ok) {
+        const error = await res.text();
+        throw new Error(error);
+      }
+
+      setToast({ message: "Meals added successfully", type: "success" });
+      setDialogOpen("mealSeprate", false);
+    } catch (error) {
+      console.log("Something went wrong" + error);
+    }
+  };
+
   return (
     <>
       {toast && (
@@ -126,7 +200,15 @@ export default function AddMealDialog() {
               onChange={(e) => setWeekday(e.target.value)}
               className="w-40 p-2 border rounded"
             >
-              {["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].map((day) => (
+              {[
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday",
+              ].map((day) => (
                 <option key={day} value={day}>
                   {day.charAt(0).toUpperCase() + day.slice(1)}
                 </option>
@@ -227,7 +309,7 @@ export default function AddMealDialog() {
             <div className="flex justify-between mt-6">
               <button
                 className="px-4 py-2 bg-orange-400 text-white rounded"
-                onClick={() => setDialogOpen("mealSeprate", false)}
+                onClick={() => handleSubmitMeals()}
               >
                 Done
               </button>

@@ -86,7 +86,7 @@ export const Header = () => {
         ) : (
           <button
             className="bg-orange-400 hover:bg-orange-300 text-white px-3 py-1 text-sm rounded"
-            onClick={() => router.push("/login")}
+            onClick={() => router.push("/feature/login")}
           >
             Sign In
           </button>

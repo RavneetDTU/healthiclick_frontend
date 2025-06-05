@@ -1,11 +1,34 @@
 import { create } from 'zustand';
 
 export interface MealItem {
-  id: number; // ensure it's present
+  id: number;
   meal_name: string;
   quantity: string;
   recipe: string;
+  weekday?: string;
+  category?: string;
 }
+
+export interface DietSection {
+  name: string;
+  time: string;
+  weekday: string;
+  elements: {
+    mealname: string;
+    quantity: string;
+    recipe: string;
+  }[];
+}
+
+export const weekDays = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
 
 export interface DietPlanState {
   weekDay: string;

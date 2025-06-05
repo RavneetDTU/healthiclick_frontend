@@ -37,12 +37,13 @@ export default function ProfileHeader() {
           avatar: data.avatar || null,
           profileImage: data.avatar || "/images/assets/profile_avtar.png",
           memberSince: new Date(data.created_at).toLocaleDateString(),
-          // Optional: If additional fields are returned later
-          exerciseCount: user.exerciseCount,
-          mealCount: user.mealCount,
-          dietAdherence: user.dietAdherence,
-          exerciseCompletion: user.exerciseCompletion,
-          goalProgress: user.goalProgress,
+          
+          // // Optional: If additional fields are returned later
+          // exerciseCount: user.exerciseCount,
+          // mealCount: user.mealCount,
+          // dietAdherence: user.dietAdherence,
+          // exerciseCompletion: user.exerciseCompletion,
+          // goalProgress: user.goalProgress,
         });
       })
       .catch((err) => {
@@ -59,14 +60,14 @@ export default function ProfileHeader() {
   return (
     <div className="overflow-hidden rounded-lg bg-white shadow-md dark:bg-gray-800">
       <div className="h-32 sm:h-40 bg-gradient-to-r from-orange-200 to-orange-100 relative">
-        {user.coverImage && (
+        {/* {user.coverImage && (
           <Image
             src={user.coverImage}
             alt="Cover"
             fill
             className="object-cover"
           />
-        )}
+        )} */}
       </div>
       <div className="p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">

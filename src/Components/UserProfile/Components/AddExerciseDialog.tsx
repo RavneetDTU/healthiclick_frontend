@@ -4,33 +4,23 @@ import { useState, useEffect, useRef } from "react";
 import { useProfileStore } from "../store/userProfileStore";
 import { Toast } from "@/Components/ui/Toast";
 
-interface ExerciseItem {
-  id: number;
-  exercise_name: string;
-  duration: string;
-  video_link: string;
-  weekday: string;
-  sectionName: string;
-  time?: string;
-}
-
 type ExerciseInput = {
   exercise_name: string;
   duration: string;
   video_link: string;
+  comment: string;
 };
 
 interface ExerciseSection {
   id: number;
   sectionName: string;
-  editing: boolean;
   newSectionName: string;
   time: string;
   exercises: ExerciseInput[];
 }
 
 export default function AddExerciseDialog() {
-  const { dialogOpen, setDialogOpen } = useProfileStore();
+  const { dialogOpen, setDialogOpen, user } = useProfileStore();
   const dialogRef = useRef<HTMLDivElement>(null);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
@@ -40,15 +30,12 @@ export default function AddExerciseDialog() {
       id: Date.now(),
       sectionName: "Exercise",
       newSectionName: "Exercise",
-      editing: false,
       time: "",
       exercises: [
-        { exercise_name: "", duration: "", video_link: "" },
-        { exercise_name: "", duration: "", video_link: "" },
+        { exercise_name: "", duration: "", video_link: "", comment: "" },
       ],
     },
   ]);
-  const [savedExercises, setSavedExercises] = useState<ExerciseItem[]>([]);
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
     setToast({ message, type });
@@ -71,6 +58,7 @@ export default function AddExerciseDialog() {
       exercise_name: "",
       duration: "",
       video_link: "",
+      comment: "",
     });
     setSections(updated);
   };
@@ -82,9 +70,8 @@ export default function AddExerciseDialog() {
         id: Date.now(),
         sectionName: `Section ${sections.length + 1}`,
         newSectionName: `Section ${sections.length + 1}`,
-        editing: true,
         time: "",
-        exercises: [{ exercise_name: "", duration: "", video_link: "" }],
+        exercises: [{ exercise_name: "", duration: "", video_link: "", comment: "" }],
       },
     ]);
   };
@@ -95,31 +82,56 @@ export default function AddExerciseDialog() {
     setSections(updated);
   };
 
-  const handleDone = () => {
+  const handleDone = async () => {
     for (const section of sections) {
       for (const ex of section.exercises) {
-        if (!ex.exercise_name || !ex.duration || !ex.video_link) {
+        if (!ex.exercise_name || !ex.duration || !ex.video_link || !ex.comment) {
           showToast("Please fill all fields", "error");
           return;
         }
       }
     }
 
-    const allExercises: ExerciseItem[] = sections.flatMap((section) =>
-      section.exercises.map((ex, i) => ({
-        id: Date.now() + i,
-        weekday,
-        sectionName: section.sectionName,
-        time: section.time,
-        ...ex,
-      }))
-    );
+    const payload = sections.map((section) => ({
+      name: section.newSectionName,
+      time: section.time,
+      elements: section.exercises.map((ex) => ({
+        exercise_name: ex.exercise_name,
+        duration: ex.duration,
+        video_link: ex.video_link,
+        comment: ex.comment,
+      })),
+      weekday,
+    }));
 
-    const updated = [...savedExercises, ...allExercises];
-    setSavedExercises(updated);
-    localStorage.setItem("saved_exercises", JSON.stringify(updated));
-    showToast("Exercises saved", "success");
-    setDialogOpen("exercise", false);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(
+        `https://xyz.healthiclick.com/admin/exercises?user_id=${user.userid}&weekday=${weekday}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!res.ok) {
+        const error = await res.text();
+        throw new Error(error);
+      }
+
+      showToast("Exercises saved", "success");
+      setDialogOpen("exercise", false);
+    } catch (error) {
+      let message = "Something went wrong";
+      if (error instanceof Error) {
+        message = error.message;
+      }
+      showToast(message, "error");
+    }
   };
 
   useEffect(() => {
@@ -199,7 +211,7 @@ export default function AddExerciseDialog() {
 
                 <div className="max-h-52 overflow-y-auto space-y-3 pr-2">
                   {section.exercises.map((ex, exerciseIndex) => (
-                    <div className="flex gap-4" key={exerciseIndex}>
+                    <div className="flex gap-4 flex-wrap" key={exerciseIndex}>
                       <input
                         type="text"
                         placeholder="Exercise name"
@@ -224,6 +236,15 @@ export default function AddExerciseDialog() {
                         value={ex.video_link}
                         onChange={(e) =>
                           handleInputChange(sectionIndex, exerciseIndex, "video_link", e.target.value)
+                        }
+                        className="flex-1 p-2 border rounded"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Comment"
+                        value={ex.comment}
+                        onChange={(e) =>
+                          handleInputChange(sectionIndex, exerciseIndex, "comment", e.target.value)
                         }
                         className="flex-1 p-2 border rounded"
                       />

@@ -8,9 +8,7 @@ export interface User {
   email: string;
   phone?: string;
   profileImage: string;
-  coverImage: string;
   avatar?: string | null;
-  membershipType: string;
   memberSince: string;
   exerciseCount: number;
   mealCount: number;
@@ -69,9 +67,7 @@ const mockUser: User = {
   name: "John Doe",
   email: "john.doe@example.com",
   profileImage: "/images/assets/profile_avtar.png",
-  coverImage: "",
   avatar: null,
-  membershipType: "Premium",
   memberSince: "Jan 2023",
   exerciseCount: 24,
   mealCount: 36,
