@@ -110,7 +110,7 @@ export default function ProfileHeader() {
           </div>
 
           <div
-            className={`flex gap-2 mt-2 sm:mt-0 ${isMobile ? "w-full" : ""}`}
+            className={`flex gap-2 mt-2 sm:mt-0 ${isMobile ? "w-full flex flex-col" : ""}`}
           >
             <button
               onClick={() => setDialogOpen("mealSeprate", true)}
