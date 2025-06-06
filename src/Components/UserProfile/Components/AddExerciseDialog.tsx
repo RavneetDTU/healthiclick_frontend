@@ -163,7 +163,7 @@ export default function AddExerciseDialog() {
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
         <div
           ref={dialogRef}
-          className="bg-white rounded-lg shadow-lg w-full max-w-[90%] max-h-screen overflow-y-auto"
+          className="bg-white rounded-lg shadow-lg w-full md:max-w-[90%] max-h-screen overflow-y-auto"
         >
           <h2 className="text-xl font-semibold text-center mt-4">Add Exercises</h2>
 
@@ -186,7 +186,7 @@ export default function AddExerciseDialog() {
           <div className="px-6 pb-4 space-y-6">
             {sections.map((section, sectionIndex) => (
               <div key={section.id} className="border-t pt-4">
-                <div className="flex flex-wrap gap-3 items-center  justify-between mb-2">
+                <div className="flex gap-2 md:gap-3 items-center  justify-between mb-2">
                   <input
                     type="text"
                     value={section.newSectionName}
@@ -204,12 +204,12 @@ export default function AddExerciseDialog() {
                         updated[sectionIndex].time = e.target.value;
                         setSections(updated);
                       }}
-                      className="border px-2 py-1 rounded text-sm mr-2"
+                      className="border px-2 py-1 rounded text-sm md:mr-2"
                     />
                   </div>
                 </div>
 
-                <div className="max-h-52 overflow-y-auto space-y-3 pr-2">
+                <div className="max-h-52 overflow-y-auto space-y-7 md:space-y-3 md:pr-2">
                   {section.exercises.map((ex, exerciseIndex) => (
                     <div className="flex gap-4 flex-wrap" key={exerciseIndex}>
                       <input
@@ -219,7 +219,7 @@ export default function AddExerciseDialog() {
                         onChange={(e) =>
                           handleInputChange(sectionIndex, exerciseIndex, "exercise_name", e.target.value)
                         }
-                        className="w-64 p-2 border rounded"
+                        className="w-40 md:w-64 p-2 border rounded"
                       />
                       <input
                         type="text"
