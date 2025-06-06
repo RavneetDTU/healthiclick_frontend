@@ -40,7 +40,6 @@ export default function AddMealDialog() {
       mealTime: "",
       meals: [
         { meal_name: "", quantity: "", recipe: "" },
-        { meal_name: "", quantity: "", recipe: "" },
       ],
     }))
   );
@@ -185,10 +184,10 @@ export default function AddMealDialog() {
         />
       )}
 
-      <div className="w-full fixed inset-0 bg-black/50 flex justify-center items-center z-50 overflow-y-auto p-4">
+      <div className="w-full fixed inset-0 bg-black/50 flex justify-center items-center z-50 overflow-y-auto md:p-4 ">
         <div
           ref={dialogRef}
-          className="bg-white rounded-lg shadow-lg w-full max-w-[90%] max-h-screen overflow-y-auto"
+          className="bg-white md:rounded-lg shadow-lg w-full max-w-[90%] max-h-screen overflow-y-auto"
         >
           <h3 className="text-xl font-semibold mb-4 text-center mt-4">
             Add Meals
@@ -216,10 +215,10 @@ export default function AddMealDialog() {
             </select>
           </div>
 
-          <div className="px-6 pb-4">
+          <div className="md:px-6 pb-4">
             {sections.map((section, sectionIndex) => (
               <div className="mb-4 pt-4 border-t" key={section.id}>
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-2 pr-2 md:p-1">
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
@@ -248,9 +247,9 @@ export default function AddMealDialog() {
                   </div>
                 </div>
 
-                <div className="max-h-36 overflow-y-auto pr-1 space-y-2">
+                <div className="max-h-36 overflow-y-auto p-2 md:pr-1 space-y-2">
                   {section.meals.map((input, idx) => (
-                    <div className="flex gap-8" key={idx}>
+                    <div className="flex gap-4 md:gap-8 flex-wrap" key={idx}>
                       <input
                         type="text"
                         placeholder="Meal name"
@@ -263,7 +262,7 @@ export default function AddMealDialog() {
                             e.target.value
                           )
                         }
-                        className="w-64 p-2 border rounded"
+                        className=" w-44 md:w-64 p-2 border rounded"
                       />
                       <input
                         type="text"
@@ -277,7 +276,7 @@ export default function AddMealDialog() {
                             e.target.value
                           )
                         }
-                        className="w-52 p-2 border rounded"
+                        className="w-44 md:w-52 p-2 border rounded"
                       />
                       <input
                         type="text"
@@ -298,7 +297,7 @@ export default function AddMealDialog() {
                 </div>
 
                 <button
-                  className="px-3 py-2 mt-3 bg-blue-500 text-white rounded"
+                  className="px-3 py-2 ml-2 mt-3  bg-blue-500 text-white rounded"
                   onClick={() => handleAddMore(sectionIndex)}
                 >
                   Add More
@@ -308,13 +307,13 @@ export default function AddMealDialog() {
 
             <div className="flex justify-between mt-6">
               <button
-                className="px-4 py-2 bg-orange-400 text-white rounded"
+                className="px-4 py-2 ml-2 bg-orange-400 text-white rounded"
                 onClick={() => handleSubmitMeals()}
               >
                 Done
               </button>
               <button
-                className="px-4 py-2 bg-green-500 text-white rounded"
+                className="px-4 py-2 mr-2 md:mr-0 bg-green-500 text-white rounded"
                 onClick={handleAddSection}
               >
                 Add Section

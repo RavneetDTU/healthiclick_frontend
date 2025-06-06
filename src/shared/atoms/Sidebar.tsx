@@ -8,6 +8,7 @@ const navItems = [
   { label: "All Leads", href: "#" },
   { label: "Tasks", href: "#" },
   { label: "Dashboard", href: "/feature/dashboard" },
+  { label: "Daily Checkin", href: "/feature/dailyCheckin" },
   { label: "Sessions", href: "/feature/session" },
   { label: "Diet Plan", href: "/feature/dietPlan" },
   { label: "Exercise", href: "/feature/exercise" },
