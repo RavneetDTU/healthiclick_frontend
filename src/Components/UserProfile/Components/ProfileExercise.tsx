@@ -209,12 +209,13 @@ function ProfileExercise() {
             <div className="border-b px-4 py-2 font-semibold text-base sm:text-lg">
               {sessionTitle}
             </div>
-            <div className="px-2 sm:px-4 py-2">
+          <div className="px-2 sm:px-4 py-2 overflow-x-auto"> 
+          <div className="min-w-fit md:min-w-full">
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="flex flex-wrap justify-between items-center py-2 rounded px-2 hover:bg-orange-100"
-                >
+                  className="flex gap-5 md:justify-between items-center py-2 rounded px-2 hover:bg-orange-100 whitespace-nowrap"
+                  >
                   <div className="w-44 md:w-48 text-sm sm:text-base capitalize">
                     {item.exercise_name}
                   </div>
@@ -231,6 +232,7 @@ function ProfileExercise() {
                 </div>
               ))}
             </div>
+          </div>
           </div>
         ))}
       </div>
