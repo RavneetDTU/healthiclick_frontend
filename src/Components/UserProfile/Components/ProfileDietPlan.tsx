@@ -94,22 +94,26 @@ export const ProfileDietPlan = () => {
       setToast({ message: "Missing user or weekday info", type: "error" });
       return;
     }
-  
+
     const token = localStorage.getItem("token");
-    const formattedPayload = Object.entries(updatedData).map(([category, items]) => ({
-      name: category,
-      time: new Date().toISOString(), // You can adjust this based on your actual time field
-      weekday: weekDay,
-      elements: items.map((item) => ({
-        mealname: item.meal_name,
-        quantity: item.quantity,
-        recipe: item.recipe,
-      })),
-    }));
-  
+    const formattedPayload = Object.entries(updatedData).map(
+      ([category, items]) => ({
+        name: category,
+        time: new Date().toISOString(), // You can adjust this based on your actual time field
+        weekday: weekDay,
+        elements: items.map((item) => ({
+          mealname: item.meal_name,
+          quantity: item.quantity,
+          recipe: item.recipe,
+        })),
+      })
+    );
+
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/meals?user_id=${user.userid}&weekday=${weekDay.toLowerCase()}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/meals?user_id=${
+          user.userid
+        }&weekday=${weekDay.toLowerCase()}`,
         {
           method: "PUT",
           headers: {
@@ -119,12 +123,12 @@ export const ProfileDietPlan = () => {
           body: JSON.stringify(formattedPayload),
         }
       );
-  
+
       if (!res.ok) {
         const text = await res.text();
         throw new Error(`Failed to update diet: ${text}`);
       }
-  
+
       setMeals(updatedData); // Optimistically update state
       setToast({ message: "Diet updated successfully", type: "success" });
     } catch (error: unknown) {
@@ -135,7 +139,6 @@ export const ProfileDietPlan = () => {
       });
     }
   };
-  
 
   return (
     <div className="h-fit bg-[#fef7f2]">
@@ -174,23 +177,25 @@ export const ProfileDietPlan = () => {
             <div className="border-b px-4 py-2 font-semibold text-base sm:text-lg">
               {mealTitle}
             </div>
-            <div className="px-2 sm:px-4 py-2">
-              {items.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex flex-wrap justify-between items-center py-2 rounded px-2 hover:bg-orange-100"
-                >
-                  <div className="w-48 md:w-60 text-sm sm:text-base capitalize ">
-                    {item.meal_name}
+            <div className="px-2 sm:px-4 py-2 overflow-x-auto">
+              <div className="min-w-fit md:min-w-full">
+                {items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex md:justify-between items-center py-2 rounded px-2 hover:bg-orange-100 whitespace-nowrap"
+                  >
+                    <div className="w-32 md:w-60 text-sm sm:text-base capitalize ">
+                      {item.meal_name}
+                    </div>
+                    <div className="w-28 md:w-48 text-sm sm:text-base ">
+                      {item.quantity}
+                    </div>
+                    <div className="w-28 md:w-72 text-sm sm:text-base ">
+                      {item.recipe}
+                    </div>
                   </div>
-                  <div className="w-28  md:w-48 text-sm sm:text-base ">
-                    {item.quantity}
-                  </div>
-                  <div className="w-28 md:w-72 text-sm sm:text-base">
-                    {item.recipe}
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         ))}
