@@ -3,10 +3,14 @@
 import { useState } from "react";
 import { useProfileStore } from "../store/userProfileStore";
 import { colors } from "@/lib/theme";
+import { ProfileDietPlan } from "./ProfileDietPlan";
+import ProfileExercise from "./ProfileExercise";
+
 
 export default function ProfileTabs() {
-  const { user, meals, exercises, appointments } = useProfileStore();
+  const { user, appointments } = useProfileStore();
   const [activeTab, setActiveTab] = useState("diet");
+  
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
@@ -45,131 +49,14 @@ export default function ProfileTabs() {
         </div>
       </div>
 
-      <div className="p-4">
+      <div>
         {activeTab === "diet" && (
-          <div>
-            <h3 className="font-medium mb-3 text-sm sm:text-base">
-              Meal Schedule
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-gray-50 dark:bg-gray-900">
-                    <th className="text-left p-2 border-b border-gray-200 dark:border-gray-700 font-medium">
-                      Meal
-                    </th>
-                    <th className="text-left p-2 border-b border-gray-200 dark:border-gray-700 font-medium">
-                      Quantity
-                    </th>
-                    <th className="text-left p-2 border-b border-gray-200 dark:border-gray-700 font-medium">
-                      Recipe
-                    </th>
-                    <th className="text-left p-2 border-b border-gray-200 dark:border-gray-700 font-medium">
-                      Date
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {meals.map((meal) => (
-                    <tr
-                      key={meal.id}
-                      className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
-                    >
-                      <td className="p-2 font-medium">{meal.meal_name}</td>
-                      <td className="p-2">{meal.quantity}</td>
-                      <td className="p-2 max-w-xs truncate">{meal.recipe}</td>
-                      <td className="p-2 text-gray-500 dark:text-gray-400">
-                        {new Intl.DateTimeFormat("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        }).format(new Date(meal.date))}
-                      </td>
-                    </tr>
-                  ))}
-                  {meals.length === 0 && (
-                    <tr>
-                      <td
-                        colSpan={4}
-                        className="p-4 text-center text-gray-500 dark:text-gray-400"
-                      >
-                        No meals added yet. Click the `Add Meal` button to get
-                        started.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <ProfileDietPlan/>
         )}
 
         {activeTab === "exercise" && (
-          <div>
-            <h3 className="font-medium mb-3 text-sm sm:text-base">
-              Workout Schedule
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-gray-50 dark:bg-gray-900">
-                    <th className="text-left p-2 border-b border-gray-200 dark:border-gray-700 font-medium">
-                      Exercise
-                    </th>
-                    <th className="text-left p-2 border-b border-gray-200 dark:border-gray-700 font-medium">
-                      Duration
-                    </th>
-                    <th className="text-left p-2 border-b border-gray-200 dark:border-gray-700 font-medium">
-                      Video Link
-                    </th>
-                    <th className="text-left p-2 border-b border-gray-200 dark:border-gray-700 font-medium">
-                      Date
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {exercises.map((exercise) => (
-                    <tr
-                      key={exercise.id}
-                      className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
-                    >
-                      <td className="p-2 font-medium">
-                        {exercise.exercise_name}
-                      </td>
-                      <td className="p-2">{exercise.duration}</td>
-                      <td className="p-2">
-                        {exercise.video_link ? (
-                          <a
-                            href={exercise.video_link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-orange-400 hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-300 underline"
-                          >
-                            Watch Video
-                          </a>
-                        ) : (
-                          <span className="text-gray-400">No video</span>
-                        )}
-                      </td>
-                      <td className="p-2 text-gray-500 dark:text-gray-400">
-                        {new Date(exercise.date).toLocaleDateString()}
-                      </td>
-                    </tr>
-                  ))}
-                  {exercises.length === 0 && (
-                    <tr>
-                      <td
-                        colSpan={4}
-                        className="p-4 text-center text-gray-500 dark:text-gray-400"
-                      >
-                        No exercises added yet. Click the `Add Exercise` button
-                        to get started.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+          <div>            
+            <ProfileExercise/>
           </div>
         )}
 

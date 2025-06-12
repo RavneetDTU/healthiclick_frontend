@@ -11,6 +11,7 @@ const navItems = [
   { label: "Diet Plan", href: "/feature/dietPlan", group: "COMPANY" },
   { label: "Exercise", href: "/feature/exercise", group: "COMPANY" },
   { label: "Reports", href: "/feature/reports", group: "COMPANY" },
+  { label: "Reports", href: "/feature/activityChart", group: "Activity Chart" },
 ]
 
 export const MobileSidebar = () => {

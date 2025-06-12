@@ -127,7 +127,7 @@ export default function ActivityCharts() {
   }, [timeframe, meals, exercises, deviceType, processChartData])
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+    <div className="w-full bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
       <div className="p-3 sm:p-4 pb-2">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div>
@@ -160,8 +160,8 @@ export default function ActivityCharts() {
           </div>
         </div>
       </div>
-      <div className="p-3 sm:p-4">
-        <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+      <div className="p-3 sm:p-4 h-full">
+        <div className="h-full grid gap-4 sm:gap-6 md:grid-cols-2 space-y-2 md:space-y-6 md:mt-20">
           <div className="relative">
             <canvas
               ref={mealChartRef}
