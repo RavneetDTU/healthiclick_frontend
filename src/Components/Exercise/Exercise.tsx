@@ -66,7 +66,7 @@ export const ExercisePage = () => {
         return;
       }
 
-      const apiUrl = `https://xyz.healthiclick.com/exercise-plan/${user.userid}?weekday=${weekdayLower}`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/exercise-plan/${user.userid}?weekday=${weekdayLower}`;
 
       try {
         const response = await fetch(apiUrl, {

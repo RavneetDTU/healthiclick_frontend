@@ -27,7 +27,7 @@ export const DietPlan = () => {
 
       try {
         const res = await fetch(
-          `https://xyz.healthiclick.com/diet-plan/${user.userid}?weekday=${weekDay.toLowerCase()}`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/diet-plan/${user.userid}?weekday=${weekDay.toLowerCase()}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

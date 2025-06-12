@@ -1,10 +1,11 @@
 // components/DailyCheckIn.tsx
 "use client";
 import { useState, useEffect } from "react";
-import { useCheckInStore } from "./store/DailyCheckinStore";
 import { Header } from "@/shared/atoms/Header";
 import { Sidebar } from "@/shared/atoms/Sidebar";
 import { Footer } from "@/shared/atoms/Footer";
+import { useProfileStore } from "../UserProfile/store/userProfileStore";
+import { Toast } from "../ui/Toast";
 
 const DailyCheckIn = () => {
   const [date, setDate] = useState<string>(
@@ -17,15 +18,27 @@ const DailyCheckIn = () => {
   const [weekday, setWeekday] = useState<string>("");
   const [isEditingPastDate, setIsEditingPastDate] = useState<boolean>(false);
 
-  const { addCheckIn, getCheckIn } = useCheckInStore();
+  const { user } = useProfileStore();
+
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   useEffect(() => {
     updateWeekday(date);
-    loadExistingData(date);
   }, [date]);
 
   const updateWeekday = (selectedDate: string) => {
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
     const dateObj = new Date(selectedDate);
     setWeekday(days[dateObj.getDay()]);
 
@@ -33,31 +46,60 @@ const DailyCheckIn = () => {
     setIsEditingPastDate(selectedDate !== today);
   };
 
-  const loadExistingData = (selectedDate: string) => {
-    const existingData = getCheckIn(selectedDate);
-    if (existingData) {
-      setSteps(existingData.steps);
-      setWeight(existingData.weight);
-      setCalories(existingData.calories);
-      setSleepHours(existingData.sleepHours);
-    } else {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const token = localStorage.getItem("token");
+
+    if (!user?.userid) {
+      console.warn("⏳ missing userId ");
+      return;
+    }
+
+    if (!token) {
+      setToast({ message: "User not authenticated", type: "error" });
+      return;
+    }
+
+    const payload = {
+      date: new Date(date).toISOString(), // ensure full ISO format
+      steps,
+      weight,
+      calories,
+      sleep_hours: sleepHours,
+    };
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/daily-checkin`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await response.json();
+      console.log("Response data:", data);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Something went wrong");
+      }
+
+      setToast({ message: "Data saved successfully", type: "success" });
+
+      // ✅ Reset fields
       setSteps(0);
       setWeight(0);
       setCalories(0);
       setSleepHours(0);
+    } catch (error: unknown) {
+      console.error("Error saving data:", error);
     }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    addCheckIn({
-      date,
-      steps,
-      weight,
-      calories,
-      sleepHours,
-    });
-    alert("Data saved successfully!");
   };
 
   return (
@@ -224,6 +266,14 @@ const DailyCheckIn = () => {
         </div>
       </div>
       <Footer />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

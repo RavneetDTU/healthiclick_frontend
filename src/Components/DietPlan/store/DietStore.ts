@@ -7,6 +7,7 @@ export interface MealItem {
   recipe: string;
   weekday?: string;
   category?: string;
+  [key: string]: unknown;
 }
 
 export interface DietSection {

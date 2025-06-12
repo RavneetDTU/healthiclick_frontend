@@ -5,7 +5,7 @@ import { Header } from "@/shared/atoms/Header";
 import { Sidebar } from "@/shared/atoms/Sidebar";
 import { MetricCard } from "@/shared/atoms/MatricCard";
 import { useCustomerStore } from "./store/AllCustomerStore";
-import { Followup , SessionUser, Status  } from "./type";
+import { Followup , Status  } from "./type";
 import avtarImage from "@/images/assets/profile_avtar.png";
 import { Footer } from "@/shared/atoms/Footer";
 import axios from "axios";
@@ -28,32 +28,32 @@ const AllCustomer = () => {
   const { sessions, orders, customers, followups, setDashboardData } =
     useCustomerStore();
 
-  const sessionUsers: SessionUser[] = [
-    {
-      id: 101,
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      phone: "123-456-7890",
-      avatarImage: { url: avtarImage },
-      sessionStatus: "Expiring Soon",
-    },
-    {
-      id: 102,
-      name: "Bob Smith",
-      email: "bob@example.com",
-      phone: "321-654-0987",
-      avatarImage: { url: avtarImage },
-      sessionStatus: "Active",
-    },
-    {
-      id: 103,
-      name: "Carol Williams",
-      email: "carol@example.com",
-      phone: "987-654-3210",
-      avatarImage: { url: avtarImage },
-      sessionStatus: "Expired",
-    },
-  ];
+  // const sessionUsers: SessionUser[] = [
+  //   {
+  //     id: 101,
+  //     name: "Alice Johnson",
+  //     email: "alice@example.com",
+  //     phone: "123-456-7890",
+  //     avatarImage: { url: avtarImage },
+  //     sessionStatus: "Expiring Soon",
+  //   },
+  //   {
+  //     id: 102,
+  //     name: "Bob Smith",
+  //     email: "bob@example.com",
+  //     phone: "321-654-0987",
+  //     avatarImage: { url: avtarImage },
+  //     sessionStatus: "Active",
+  //   },
+  //   {
+  //     id: 103,
+  //     name: "Carol Williams",
+  //     email: "carol@example.com",
+  //     phone: "987-654-3210",
+  //     avatarImage: { url: avtarImage },
+  //     sessionStatus: "Expired",
+  //   },
+  // ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -178,7 +178,7 @@ const AllCustomer = () => {
               />
             )}
 
-            <CustomerTable<SessionUser>
+            {/* <CustomerTable<SessionUser>
               title="Create Session"
               rows={sessionUsers}
               filters={["All", "Active", "Expiring Soon", "Expired"]}
@@ -213,7 +213,7 @@ const AllCustomer = () => {
                   {row.sessionStatus}
                 </span>
               )}
-            />
+            /> */}
           </div>
         </main>
       </div>
