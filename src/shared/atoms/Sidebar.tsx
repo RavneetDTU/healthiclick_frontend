@@ -28,10 +28,10 @@ export const Sidebar = () => {
   }, []);
 
   return (
-    <aside className="w-56 h-full flex flex-col items-center bg-white shadow-md shadow-gray-500 p-4">
+    <aside className="w-56 h-full flex flex-col items-center bg-white shadow-md shadow-gray-500 dark:shadow-gray-500 p-4">
       {isAdmin && (
         <div className="mb-8">
-          <h2 className="text-xs text-gray-500 mb-2">YOU</h2>
+          <h2 className="text-xs text-gray-700 dark:text-gray-700 mb-2">YOU</h2>
           {navItems.slice(0, 3).map((item) => (
             <Link href={item.href} key={item.label}>
               <div className="mb-4 font-semibold cursor-pointer hover:text-orange-600 transition-colors">
@@ -43,7 +43,7 @@ export const Sidebar = () => {
       )}
 
       <div>
-        <h2 className="text-xs text-gray-500 mb-2">COMPANY</h2>
+        <h2 className="text-xs text-gray-700 dark:text-gray-700 mb-2">COMPANY</h2>
         {navItems.slice(3).map((item) => (
           <Link href={item.href} key={item.label}>
             <div className="mb-4 font-semibold cursor-pointer hover:text-orange-600 transition-colors">

@@ -73,7 +73,7 @@ export const Header = () => {
             </button>
             {showProfileMenu && (
               <div className="absolute right-0 top-10 w-40 bg-white shadow-md rounded-md p-3 z-50">
-                <p className="text-sm text-gray-700 mb-2 font-medium truncate">{userName}</p>
+                <p className="text-sm text-gray-700 dark:text-gray-700 mb-2 font-medium truncate">{userName}</p>
                 <button
                   onClick={handleLogout}
                   className="w-full bg-red-100 hover:bg-red-200 text-red-700 text-sm py-1 px-2 rounded"

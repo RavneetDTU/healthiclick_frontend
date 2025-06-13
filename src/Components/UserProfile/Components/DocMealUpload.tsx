@@ -134,14 +134,14 @@ export default function DocUploadMeal() {
                   title="Capture Image from Camera"
                 />
 
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
                   Supported formats: Images, PDF, DOC, DOCX
                 </p>
               </div>
 
               {file && (
                 <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                  <p className="text-gray-600 dark:text-gray-300 text-sm font-medium">Selected File:</p>
+                  <p className="text-gray-600 dark:text-gray-500 text-sm font-medium">Selected File:</p>
                   <p className="text-sm">{file.name}</p>
                   {file.type === "application/pdf" ? (
                     <iframe
@@ -165,7 +165,7 @@ export default function DocUploadMeal() {
             <button
               type="button"
               onClick={() => setDialogOpen("mealDoc", false)}
-              className="text-sm text-gray-500 hover:underline"
+              className="text-sm text-gray-500 dark:text-gray-500 hover:underline"
             >
               Cancel
             </button>

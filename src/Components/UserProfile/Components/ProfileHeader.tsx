@@ -86,10 +86,10 @@ export default function ProfileHeader() {
           <div className="flex-1 space-y-2">
             <div>
               <h1 className="text-xl sm:text-2xl font-bold">{user.name}</h1>
-              <span className="text-gray-500 dark:text-gray-400 text-sm pr-2">
+              <span className="text-gray-500 dark:text-gray-600 text-sm pr-2">
                 {user.email}
               </span>
-              <span className="text-gray-500 dark:text-gray-400 text-sm">
+              <span className="text-gray-500 dark:text-gray-600 text-sm">
                 {user.phone}
               </span>
             </div>
