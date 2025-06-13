@@ -132,7 +132,7 @@ export default function ActivityCharts() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div>
             <h2 className="text-base sm:text-lg font-semibold">Activity Overview</h2>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-600">
               Track your meals and exercises over time
             </p>
           </div>

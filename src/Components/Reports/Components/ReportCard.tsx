@@ -21,7 +21,7 @@ export default function ReportCard({ report }: ReportCardProps) {
       case "pending":
         return <Clock className="h-5 w-5 text-warning-500" />
       default:
-        return <FileText className="h-5 w-5 text-gray-400" />
+        return <FileText className="h-5 w-5 text-gray-400 dark:text-gray-400" />
     }
   }
 
@@ -82,20 +82,20 @@ export default function ReportCard({ report }: ReportCardProps) {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-200">
+    <div className="bg-white border border-gray-200 dark:border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-200">
       <div className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center">
             <div className="bg-primary-50 p-2 rounded-lg">
               <FileText className="h-5 w-5 text-primary-600" />
             </div>
-            <h3 className="ml-3 text-lg font-medium text-gray-900">{report.name}</h3>
+            <h3 className="ml-3 text-lg font-medium text-gray-900 dark:text-gray-900">{report.name}</h3>
           </div>
           <div className="flex items-center">{getStatusIcon()}</div>
         </div>
 
         <div className="mt-3 space-y-2">
-          <div className="flex items-center text-sm text-gray-500">
+          <div className="flex items-center text-sm text-gray-500 dark:text-gray-500">
             <Calendar className="h-4 w-4 mr-1.5" />
             <span>{report.date}</span>
           </div>
@@ -115,12 +115,12 @@ export default function ReportCard({ report }: ReportCardProps) {
         </div>
 
         {isExpanded && (
-          <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-100">
             <div className="space-y-3">
               {report.details &&
                 report.details.map((detail, index) => (
                   <div key={index} className="flex justify-between text-sm">
-                    <span className="text-gray-600">{detail.name}</span>
+                    <span className="text-gray-600 dark:text-gray-600">{detail.name}</span>
                     <span
                       className={`font-medium ${
                         detail.status === "normal"
@@ -132,7 +132,7 @@ export default function ReportCard({ report }: ReportCardProps) {
                               : "text-gray-900"
                       }`}
                     >
-                      {detail.value} {detail.unit && <span className="text-gray-500 text-xs">{detail.unit}</span>}
+                      {detail.value} {detail.unit && <span className="text-gray-500 dark:text-gray-500 text-xs">{detail.unit}</span>}
                     </span>
                   </div>
                 ))}

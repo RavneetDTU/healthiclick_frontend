@@ -20,7 +20,7 @@ export const PopupComponent: React.FC<PopupComponentProps> = ({
   onSave,
 }) => {
   return (
-    <div className="fixed inset-0 bg-gray-700/50 flex items-center justify-center z-50 px-4">
+    <div className="fixed inset-0 bg-gray-700/50 dark:bg-gray-700/50 flex items-center justify-center z-50 px-4">
       <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
         <h3 className="text-lg font-semibold mb-4">Schedule Next Follow-up</h3>
 

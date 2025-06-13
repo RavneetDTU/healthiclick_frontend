@@ -32,7 +32,7 @@ export const MobileSidebar = () => {
     <div className="flex flex-col h-full bg-white p-4 overflow-y-auto">
       {Object.entries(groupedNavItems).map(([group, items]) => (
         <div key={group} className="mb-6">
-          <h2 className="text-xs text-gray-500 mb-2 px-2">{group}</h2>
+          <h2 className="text-xs text-gray-600 dark:text-gray-600 mb-2 px-2">{group}</h2>
           <div className="space-y-1">
             {items.map((item) => {
               const isActive = pathname === item.href

@@ -96,7 +96,7 @@ export function LoginForm() {
   return (
     <div className="w-full max-w-md mx-auto p-6 shadow-md bg-white rounded-md">
       <h2 className="text-2xl font-bold mb-2">Login</h2>
-      <p className="text-sm mb-4 text-gray-600">Return and reconnect with HealthiClick.</p>
+      <p className="text-sm mb-4 text-gray-700 dark:text-gray-700">Return and reconnect with HealthiClick.</p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <div className="text-red-600 text-sm">{error}</div>}

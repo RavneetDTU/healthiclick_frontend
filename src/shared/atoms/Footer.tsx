@@ -6,7 +6,7 @@ export const Footer = () => {
       {/* Left side */}
       <div className="flex items-center space-x-2 text-sm">
         <span className="font-bold text-lg">Healthiclick</span>
-        <span className="text-gray-600 hidden sm:inline">© 2024 Healthiclick</span>
+        <span className="text-gray-700 dark:text-gray-700 hidden sm:inline">© 2024 Healthiclick</span>
       </div>
 
       {/* Right side */}

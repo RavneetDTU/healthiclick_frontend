@@ -28,7 +28,7 @@ export default function ReportsPage() {
           <main className="p-6 overflow-y-auto h-full">
             <div className="bg-white shadow-sm rounded mb-6">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                <h1 className="text-3xl font-bold text-gray-900">Health Reports</h1>
+                <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-800">Health Reports</h1>
                 <p className="mt-2 text-gray-600">
                   View and manage all your health-related reports in one place
                 </p>

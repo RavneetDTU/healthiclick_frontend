@@ -114,10 +114,10 @@ const DailyCheckIn = () => {
           <div className="max-w-md mx-auto bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="p-6">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
-                <h2 className="text-xl font-bold text-gray-800 mb-2 sm:mb-0">
+                <h2 className="text-xl font-bold text-gray-700 dark:text-gray-700 mb-2 sm:mb-0">
                   Daily Check-In
                 </h2>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-700 dark:text-gray-700">
                   <span className="font-medium">{weekday}</span>,{" "}
                   {new Date(date).toLocaleDateString()}
                 </div>
@@ -133,7 +133,7 @@ const DailyCheckIn = () => {
                 <div>
                   <label
                     htmlFor="date"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1"
                   >
                     Select Date
                   </label>
@@ -143,15 +143,15 @@ const DailyCheckIn = () => {
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                     max={new Date().toISOString().split("T")[0]}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200"
                   />
                 </div>
 
                 <div className="space-y-4">
-                  <div className="bg-gray-50 p-3 rounded-lg">
+                  <div className="bg-gray-50 dark:bg-gray-50 p-3 rounded-lg">
                     <label
                       htmlFor="steps"
-                      className="block text-sm font-medium text-gray-700 mb-1"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1"
                     >
                       Step Count
                     </label>
@@ -164,19 +164,19 @@ const DailyCheckIn = () => {
                           setSteps(parseInt(e.target.value) || 0)
                         }
                         min="0"
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 dark:bordergray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200"
                         placeholder="Enter steps"
                       />
-                      <span className="absolute right-3 top-2 text-gray-500 text-sm">
+                      <span className="absolute right-3 top-2 text-gray-600 dark:text-gray-600 text-sm">
                         steps
                       </span>
                     </div>
                   </div>
 
-                  <div className="bg-gray-50 p-3 rounded-lg">
+                  <div className="bg-gray-50 dark:bg-gray-50 p-3 rounded-lg">
                     <label
                       htmlFor="weight"
-                      className="block text-sm font-medium text-gray-700 mb-1"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1"
                     >
                       Weight
                     </label>
@@ -190,19 +190,19 @@ const DailyCheckIn = () => {
                         }
                         min="0"
                         step="0.1"
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200"
                         placeholder="Enter weight"
                       />
-                      <span className="absolute right-3 top-2 text-gray-500 text-sm">
+                      <span className="absolute right-3 top-2 text-gray-600 dark:text-gray-600 text-sm">
                         kg
                       </span>
                     </div>
                   </div>
 
-                  <div className="bg-gray-50 p-3 rounded-lg">
+                  <div className="bg-gray-50 dark:bg-gray-50 p-3 rounded-lg">
                     <label
                       htmlFor="calories"
-                      className="block text-sm font-medium text-gray-700 mb-1"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1"
                     >
                       Calories
                     </label>
@@ -215,19 +215,19 @@ const DailyCheckIn = () => {
                           setCalories(parseInt(e.target.value) || 0)
                         }
                         min="0"
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200"
                         placeholder="Enter calories"
                       />
-                      <span className="absolute right-3 top-2 text-gray-500 text-sm">
+                      <span className="absolute right-3 top-2 text-gray-700 dark:text-gray-700 text-sm">
                         kcal
                       </span>
                     </div>
                   </div>
 
-                  <div className="bg-gray-50 p-3 rounded-lg">
+                  <div className="bg-gray-50 dark:bg-gray-50 p-3 rounded-lg">
                     <label
                       htmlFor="sleep"
-                      className="block text-sm font-medium text-gray-700 mb-1"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1"
                     >
                       Sleep Duration
                     </label>
@@ -242,10 +242,10 @@ const DailyCheckIn = () => {
                         min="0"
                         max="24"
                         step="0.5"
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200"
                         placeholder="Enter sleep hours"
                       />
-                      <span className="absolute right-3 top-2 text-gray-500 text-sm">
+                      <span className="absolute right-3 top-2 text-gray-700 dark:text-gray-700 text-sm">
                         hours
                       </span>
                     </div>
