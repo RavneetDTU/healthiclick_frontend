@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useProfileStore } from "../store/userProfileStore";
-import { colors } from "@/lib/theme";
+// import { useProfileStore } from "../store/userProfileStore";
 import { ProfileDietPlan } from "./ProfileDietPlan";
 import ProfileExercise from "./ProfileExercise";
 
 
 export default function ProfileTabs() {
-  const { user, appointments } = useProfileStore();
+  // const { user, appointments } = useProfileStore();
   const [activeTab, setActiveTab] = useState("diet");
   
 
@@ -36,7 +35,7 @@ export default function ProfileTabs() {
           >
             Exercise Plan
           </button>
-          <button
+          {/* <button
             onClick={() => setActiveTab("client")}
             className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
               activeTab === "client"
@@ -45,7 +44,7 @@ export default function ProfileTabs() {
             }`}
           >
             Client Data
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -59,7 +58,7 @@ export default function ProfileTabs() {
             <ProfileExercise/>
           </div>
         )}
-
+{/* 
         {activeTab === "client" && (
           <div className="grid md:grid-cols-2 gap-6">
             <div>
@@ -148,7 +147,7 @@ export default function ProfileTabs() {
               </div>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

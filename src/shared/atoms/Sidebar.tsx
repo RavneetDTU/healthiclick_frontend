@@ -13,8 +13,6 @@ const navItems = [
   { label: "Diet Plan", href: "/feature/dietPlan" },
   { label: "Exercise", href: "/feature/exercise" },
   { label: "Reports", href: "/feature/reports" },
-  { label: "Activity Chart", href: "/feature/activityChart" },
-
 ];
 
 export const Sidebar = () => {
