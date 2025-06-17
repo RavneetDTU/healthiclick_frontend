@@ -8,6 +8,7 @@ import { Header } from "@/shared/atoms/Header";
 import { Sidebar } from "@/shared/atoms/Sidebar";
 import DocUploadMeal from "./Components/DocMealUpload";
 import { useProfileStore } from "@/Components/UserProfile/store/userProfileStore";
+import DocUploadExercise from "./Components/DocExerciseUpload";
 
 export default function ProfilePage() {
   const { dialogOpen } = useProfileStore();
@@ -31,6 +32,7 @@ export default function ProfilePage() {
             {dialogOpen.mealSeprate && <AddMealDialog />} 
             {dialogOpen.mealDoc && <DocUploadMeal />} 
             {dialogOpen.exercise && <AddExerciseDialog />} 
+            {dialogOpen.exerciseDoc && <DocUploadExercise />} 
           </main>
         </div>
       </div>

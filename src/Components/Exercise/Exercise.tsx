@@ -9,6 +9,7 @@ import { ImCross } from "react-icons/im";
 import { FaCheck } from "react-icons/fa";
 import { Footer } from "@/shared/atoms/Footer";
 import { Toast } from "../ui/Toast";
+import Link from "next/link";
 
 interface ExerciseElement {
   exercise_name: string;
@@ -45,11 +46,19 @@ export const ExercisePage = () => {
   const { user } = useProfileStore();
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedExercise, setSelectedExercise] = useState<StructuredExercise | null>(null);
+  const [selectedExercise, setSelectedExercise] =
+    useState<StructuredExercise | null>(null);
   const [reason, setReason] = useState("");
   const [notes, setNotes] = useState("");
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
-  const [structuredExercises, setStructuredExercises] = useState<Record<string, StructuredExercise[]>>({});
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+  const [structuredExercises, setStructuredExercises] = useState<
+    Record<string, StructuredExercise[]>
+  >({});
+  const [pdfAvailable, setPdfAvailable] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchExercises = async (): Promise<void> => {
@@ -92,15 +101,17 @@ export const ExercisePage = () => {
 
         data.forEach((section, sectionIndex) => {
           const category = section.name || `Session ${sectionIndex + 1}`;
-          const entries: StructuredExercise[] = section.elements.map((el, idx) => ({
-            id: sectionIndex * 100 + idx,
-            exercise_name: el.exercise_name,
-            duration: el.duration,
-            video_link: el.video_link,
-            comment: el.comment,
-            weekday: section.weekday,
-            category,
-          }));
+          const entries: StructuredExercise[] = section.elements.map(
+            (el, idx) => ({
+              id: sectionIndex * 100 + idx,
+              exercise_name: el.exercise_name,
+              duration: el.duration,
+              video_link: el.video_link,
+              comment: el.comment,
+              weekday: section.weekday,
+              category,
+            })
+          );
 
           if (!structured[category]) {
             structured[category] = entries;
@@ -111,7 +122,8 @@ export const ExercisePage = () => {
 
         setStructuredExercises(structured);
       } catch (error) {
-        const message = error instanceof Error ? error.message : "Unknown error";
+        const message =
+          error instanceof Error ? error.message : "Unknown error";
         console.error("❌ Fetch failed:", message);
         setToast({ message, type: "error" });
       }
@@ -120,12 +132,67 @@ export const ExercisePage = () => {
     fetchExercises();
   }, [user?.userid, weekDay]);
 
+  useEffect(() => {
+    const checkPdfAvailability = async () => {
+      const token = localStorage.getItem("token");
+      if (!user?.userid || !token) return;
+
+      try {
+        // Check if PDF exists
+        const pdfRes = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/exercise-plan-pdf/${user.userid}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log("PDF check status:", pdfRes.status);
+        setPdfAvailable(pdfRes.ok || pdfRes.status === 304);
+
+        // Now fetch uploaded_at from exercise plan
+        const planRes = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/exercise-plans/${user.userid}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (planRes.ok) {
+          const planData = await planRes.json();
+          const uploadedAt = planData?.[0]?.uploaded_at;
+
+          if (uploadedAt) {
+            const dt = new Date(uploadedAt);
+            const formatted = dt.toLocaleString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+            setLastUpdated(formatted);
+          }
+        }
+      } catch (err) {
+        console.error("Error checking PDF or fetching last update:", err);
+        setPdfAvailable(false);
+      }
+    };
+
+    checkPdfAvailability();
+  }, [user?.userid]);
+
   const handleTrackExercise = async (
     exerciseId: number,
     followed: boolean,
     reason: string
   ): Promise<void> => {
-    console.log("📝 Reason for action:", reason); 
+    console.log("📝 Reason for action:", reason);
 
     setToast({
       message: followed ? "Exercise completed" : "Exercise skipped",
@@ -140,7 +207,11 @@ export const ExercisePage = () => {
 
   const submitReason = (): void => {
     if (selectedExercise) {
-      handleTrackExercise(selectedExercise.id, false, reason || "No reason given");
+      handleTrackExercise(
+        selectedExercise.id,
+        false,
+        reason || "No reason given"
+      );
     }
     setModalOpen(false);
     setReason("");
@@ -160,7 +231,9 @@ export const ExercisePage = () => {
           <h2 className="text-2xl sm:text-3xl font-bold mb-4">Exercise Plan</h2>
 
           <div className="mb-6">
-            <label className="text-base sm:text-lg font-medium mr-2 sm:mr-4">Weekdays</label>
+            <label className="text-base sm:text-lg font-medium mr-2 sm:mr-4">
+              Weekdays
+            </label>
             <select
               className="border rounded px-3 py-1 text-sm bg-white"
               value={weekDay}
@@ -168,10 +241,34 @@ export const ExercisePage = () => {
             >
               <option value="">Choose a Day...</option>
               {weekDays.map((day) => (
-                <option key={day} value={day}>{day}</option>
+                <option key={day} value={day}>
+                  {day}
+                </option>
               ))}
             </select>
           </div>
+
+          {structuredExercises &&
+            Object.keys(structuredExercises).length === 0 && (
+              <div className="bg-yellow-100 border border-yellow-300 text-yellow-800 p-4 rounded mb-6">
+                Your trainer hasn`t uploaded or added your exercise plan yet.
+              </div>
+            )}
+
+          {pdfAvailable && (
+            <div className="mb-6">
+              <Link href="/feature/ExercisePlanPdf" target="_blank">
+                <button className="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
+                  View Uploaded Exercise Plan
+                </button>
+              </Link>
+              {lastUpdated && (
+                <p className="text-sm text-gray-600 mt-2">
+                  Last updated on: {lastUpdated}
+                </p>
+              )}
+            </div>
+          )}
 
           {Object.entries(structuredExercises).map(([sessionTitle, items]) => (
             <div key={sessionTitle} className="mb-6 bg-white rounded shadow-md">
@@ -198,7 +295,9 @@ export const ExercisePage = () => {
                     </a>
                     <div
                       className="text-green-500 text-xl cursor-pointer"
-                      onClick={() => handleTrackExercise(item.id, true, "Completed")}
+                      onClick={() =>
+                        handleTrackExercise(item.id, true, "Completed")
+                      }
                     >
                       <FaCheck />
                     </div>

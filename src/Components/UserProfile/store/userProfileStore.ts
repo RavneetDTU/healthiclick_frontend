@@ -47,6 +47,7 @@ interface DialogState {
   mealSeprate: boolean;
   mealDoc: boolean;
   exercise: boolean;
+  exerciseDoc: boolean;
 }
 
 interface ProfileState {
@@ -143,6 +144,7 @@ export const useProfileStore = create<ProfileState>()(
         mealSeprate: false,
         mealDoc: false,
         exercise: false,
+        exerciseDoc: false,
       },
       setUser: (newUser) =>
         set((state) => ({
