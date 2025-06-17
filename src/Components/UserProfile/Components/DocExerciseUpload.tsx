@@ -7,7 +7,7 @@ import { useDevice } from "@/hooks/useDevice"
 import { Toast } from "@/Components/ui/Toast"
 import { FaCamera } from "react-icons/fa"
 
-export default function DocUploadMeal() {
+export default function DocUploadExercise() {
   const { dialogOpen, setDialogOpen, user } = useProfileStore()
   const { isMobile } = useDevice()
   const [file, setFile] = useState<File | null>(null)
@@ -42,7 +42,7 @@ export default function DocUploadMeal() {
     formData.append("file", file)
   
     try {
-      const response = await fetch(`https://xyz.healthiclick.com/diet-plan/${userId}`, {
+      const response = await fetch(`https://xyz.healthiclick.com/exercise-plan/${userId}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -57,9 +57,9 @@ export default function DocUploadMeal() {
         throw new Error(`Upload failed: ${response.status}`)
       }
   
-      showToast("Diet Plan uploaded successfully", "success")
+      showToast("Exercise uploaded successfully", "success")
       setFile(null)
-      setDialogOpen("mealDoc", false)
+      setDialogOpen("exerciseDoc", false)
     } catch (error) {
       console.error("Upload error:", error)
       showToast("Failed to upload diet plan. Please try again.", "error")
@@ -70,7 +70,7 @@ export default function DocUploadMeal() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
-        setDialogOpen("mealDoc", false)
+        setDialogOpen("exerciseDoc", false)
       }
     }
 
@@ -83,9 +83,9 @@ export default function DocUploadMeal() {
       document.removeEventListener("mousedown", handleClickOutside)
       document.body.style.overflow = ""
     }
-  }, [dialogOpen.mealDoc, setDialogOpen])
+  }, [dialogOpen.exerciseDoc, setDialogOpen])
 
-  if (!dialogOpen.mealDoc) return null
+  if (!dialogOpen.exerciseDoc) return null
 
   return (
     <>
@@ -99,7 +99,7 @@ export default function DocUploadMeal() {
           aria-modal="true"
         >
           <div className="p-4 sm:p-6">
-            <h2 className="text-lg sm:text-xl font-semibold mb-4">Upload Meal Document</h2>
+            <h2 className="text-lg sm:text-xl font-semibold mb-4">Upload Exercise Document</h2>
 
             <div className="space-y-4">
               <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center relative">
@@ -164,7 +164,7 @@ export default function DocUploadMeal() {
           <div className="flex justify-between items-center p-4 border-t border-gray-200 dark:border-gray-700">
             <button
               type="button"
-              onClick={() => setDialogOpen("mealDoc", false)}
+              onClick={() => setDialogOpen("exerciseDoc", false)}
               className="text-sm text-gray-500 dark:text-gray-500 hover:underline"
             >
               Cancel

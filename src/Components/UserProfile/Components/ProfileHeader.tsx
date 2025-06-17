@@ -132,6 +132,15 @@ export default function ProfileHeader() {
               Add Meal(Doc)
             </button>
             <button
+              onClick={() => setDialogOpen("exerciseDoc", true)}
+              className={`flex items-center justify-center gap-2 px-3 py-2 text-sm bg-orange-300 text-black rounded-md hover:bg-orange-200 transition-colors ${
+                isMobile ? "flex-1" : ""
+              }`}
+            >
+              <GrYoga />
+              Add Exercise (Doc)
+            </button>
+            <button
               onClick={() => setDialogOpen("exercise", true)}
               className={`flex items-center justify-center gap-2 px-3 py-2 text-sm bg-orange-300 text-black rounded-md hover:bg-orange-200 transition-colors ${
                 isMobile ? "flex-1" : ""
