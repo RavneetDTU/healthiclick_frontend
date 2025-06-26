@@ -150,9 +150,9 @@ export const DietPlan = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#fef7f2]">
+    <div className="min-h-screen flex flex-col bg-[#fef7f2]">
       <Header />
-      <div className="flex flex-col lg:flex-row">
+      <div className="flex flex-1 flex-col lg:flex-row">
         <div className="hidden md:block">
           <Sidebar />
         </div>
