@@ -6,10 +6,10 @@ import { InlineWidget } from "react-calendly";
 
 export default function BookSessionPage() {
   return (
-    <div className="min-h-screen bg-[#fef7f2]">
+    <div className="min-h-screen flex flex-col bg-[#fef7f2]">
       <Header />
 
-      <div className="flex">
+      <div className="flex flex-1">
         <div className="hidden md:block">
           <Sidebar />
         </div>
