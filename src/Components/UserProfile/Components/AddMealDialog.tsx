@@ -38,9 +38,7 @@ export default function AddMealDialog() {
       sectionName: name,
       tempSectionName: name,
       mealTime: "",
-      meals: [
-        { meal_name: "", quantity: "", recipe: "" },
-      ],
+      meals: [{ meal_name: "", quantity: "", recipe: "" }],
     }))
   );
 
@@ -80,10 +78,7 @@ export default function AddMealDialog() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dialogRef.current &&
-        !dialogRef.current.contains(event.target as Node)
-      ) {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
         setDialogOpen("mealSeprate", false);
       }
     };
@@ -100,48 +95,29 @@ export default function AddMealDialog() {
 
   if (!dialogOpen.mealSeprate) return null;
 
-  // function to format time to HH:MM format
   const formatTimeTo12H = (time24: string) => {
     if (!time24 || !time24.includes(":")) return "12:00 AM";
-
-    const [hoursStr, minutesStr] = time24.split(":");
-    const hours = Number(hoursStr);
-    const minutes = Number(minutesStr);
-
-    if (isNaN(hours) || isNaN(minutes)) return "12:00 AM";
-
-    const period = hours >= 12 ? "PM" : "AM";
-    const formattedHours = (((hours + 11) % 12) + 1)
-      .toString()
-      .padStart(2, "0");
-    return `${formattedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
+    const [h, m] = time24.split(":").map(Number);
+    const period = h >= 12 ? "PM" : "AM";
+    const hour = ((h + 11) % 12 + 1).toString().padStart(2, "0");
+    return `${hour}:${m.toString().padStart(2, "0")} ${period}`;
   };
 
-  // Calling the API for adding meals
   const handleSubmitMeals = async () => {
     const { userid } = useProfileStore.getState().user;
     const token = localStorage.getItem("token");
     if (!userid || !token) {
-      setToast({
-        message: "User ID not found or unauthenticated",
-        type: "error",
-      });
+      setToast({ message: "User ID not found or unauthenticated", type: "error" });
       return;
     }
 
-    // Copy sections and update sectionName from tempSectionName
-    const cleanedSections = sections.map((section) => ({
-      ...section,
-      sectionName: section.tempSectionName,
-    }));
-
-    const payload = cleanedSections.map((section) => ({
-      name: section.sectionName,
+    const payload = sections.map((section) => ({
+      name: section.tempSectionName,
       time: formatTimeTo12H(section.mealTime),
-      elements: section.meals.map((meal) => ({
-        mealname: meal.meal_name,
-        quantity: meal.quantity,
-        recipe: meal.recipe,
+      elements: section.meals.map((m) => ({
+        mealname: m.meal_name,
+        quantity: m.quantity,
+        recipe: m.recipe,
       })),
       weekday,
     }));
@@ -159,55 +135,31 @@ export default function AddMealDialog() {
         }
       );
 
-      const data = await res.json();
-      console.log("Response from server:", data);
-
-      if (!res.ok) {
-        const error = await res.text();
-        throw new Error(error);
-      }
+      if (!res.ok) throw new Error(await res.text());
 
       setToast({ message: "Meals added successfully", type: "success" });
       setDialogOpen("mealSeprate", false);
     } catch (error) {
-      console.log("Something went wrong" + error);
+      console.error("Submit error:", error);
+      setToast({ message: "Something went wrong", type: "error" });
     }
   };
 
   return (
     <>
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      <div className="w-full fixed inset-0 bg-black/50 flex justify-center items-center z-50 overflow-y-auto md:p-4 ">
-        <div
-          ref={dialogRef}
-          className="bg-white md:rounded-lg shadow-lg w-full max-w-[90%] max-h-screen overflow-y-auto"
-        >
-          <h3 className="text-xl font-semibold mb-4 text-center mt-4">
-            Add Meals
-          </h3>
+      <div className="w-full fixed inset-0 bg-black/50 flex justify-center items-center z-50 overflow-y-auto p-4">
+        <div ref={dialogRef} className="bg-white rounded-xl shadow-lg w-full max-w-[90%] max-h-screen overflow-y-auto">
+          <h3 className="text-xl font-semibold text-center mt-5 text-teal-700">Add Meals</h3>
 
-          <div className="mb-4 text-center">
+          <div className="text-center mt-2 mb-4">
             <select
               value={weekday}
               onChange={(e) => setWeekday(e.target.value)}
-              className="w-40 p-2 border rounded"
+              className="w-40 p-2 border rounded text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-400"
             >
-              {[
-                "monday",
-                "tuesday",
-                "wednesday",
-                "thursday",
-                "friday",
-                "saturday",
-                "sunday",
-              ].map((day) => (
+              {["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].map((day) => (
                 <option key={day} value={day}>
                   {day.charAt(0).toUpperCase() + day.slice(1)}
                 </option>
@@ -215,25 +167,23 @@ export default function AddMealDialog() {
             </select>
           </div>
 
-          <div className="md:px-6 pb-4">
+          <div className="px-6 pb-6 space-y-8">
             {sections.map((section, sectionIndex) => (
-              <div className="mb-4 pt-4 border-t" key={section.id}>
-                <div className="flex items-center justify-between mb-2 pr-2 md:p-1">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={section.tempSectionName}
-                      onChange={(e) => {
-                        const updated = [...sections];
-                        updated[sectionIndex].tempSectionName = e.target.value;
-                        setSections(updated);
-                      }}
-                      className="text-sm border rounded px-2 py-1 ml-2"
-                    />
-                  </div>
+              <div key={section.id} className="border-t pt-4 space-y-4">
+                <div className="flex flex-col md:flex-row justify-between gap-3 items-center">
+                  <input
+                    type="text"
+                    value={section.tempSectionName}
+                    onChange={(e) => {
+                      const updated = [...sections];
+                      updated[sectionIndex].tempSectionName = e.target.value;
+                      setSections(updated);
+                    }}
+                    className="border px-3 py-2 rounded text-sm w-full md:w-1/2 bg-gray-50 focus:ring-2 focus:ring-teal-400"
+                  />
 
                   <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium">Meal Time:</label>
+                    <label className="text-sm font-medium text-gray-600">Meal Time:</label>
                     <input
                       type="time"
                       value={section.mealTime}
@@ -242,63 +192,42 @@ export default function AddMealDialog() {
                         updated[sectionIndex].mealTime = e.target.value;
                         setSections(updated);
                       }}
-                      className="border px-2 py-1 rounded text-sm"
+                      className="border px-3 py-2 rounded text-sm bg-gray-50 focus:ring-2 focus:ring-teal-400"
                     />
                   </div>
                 </div>
 
-                <div className="max-h-36 overflow-y-auto p-2 md:pr-1 space-y-2">
+                <div className="space-y-3">
                   {section.meals.map((input, idx) => (
-                    <div className="flex gap-4 md:gap-8 flex-wrap" key={idx}>
+                    <div key={idx} className="flex flex-wrap gap-3">
                       <input
                         type="text"
                         placeholder="Meal name"
                         value={input.meal_name}
-                        onChange={(e) =>
-                          handleInputChange(
-                            sectionIndex,
-                            idx,
-                            "meal_name",
-                            e.target.value
-                          )
-                        }
-                        className=" w-44 md:w-64 p-2 border rounded"
+                        onChange={(e) => handleInputChange(sectionIndex, idx, "meal_name", e.target.value)}
+                        className="w-44 md:w-64 p-2 border rounded bg-gray-50 focus:ring-2 focus:ring-teal-400"
                       />
                       <input
                         type="text"
                         placeholder="Quantity"
                         value={input.quantity}
-                        onChange={(e) =>
-                          handleInputChange(
-                            sectionIndex,
-                            idx,
-                            "quantity",
-                            e.target.value
-                          )
-                        }
-                        className="w-44 md:w-52 p-2 border rounded"
+                        onChange={(e) => handleInputChange(sectionIndex, idx, "quantity", e.target.value)}
+                        className="w-36 md:w-52 p-2 border rounded bg-gray-50 focus:ring-2 focus:ring-teal-400"
                       />
                       <input
                         type="text"
                         placeholder="Recipe"
                         value={input.recipe}
-                        onChange={(e) =>
-                          handleInputChange(
-                            sectionIndex,
-                            idx,
-                            "recipe",
-                            e.target.value
-                          )
-                        }
-                        className="flex-1 p-2 border rounded"
+                        onChange={(e) => handleInputChange(sectionIndex, idx, "recipe", e.target.value)}
+                        className="flex-1 p-2 border rounded bg-gray-50 focus:ring-2 focus:ring-teal-400"
                       />
                     </div>
                   ))}
                 </div>
 
                 <button
-                  className="px-3 py-2 ml-2 mt-3  bg-blue-500 text-white rounded"
                   onClick={() => handleAddMore(sectionIndex)}
+                  className="mt-2 px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 transition"
                 >
                   Add More
                 </button>
@@ -307,14 +236,14 @@ export default function AddMealDialog() {
 
             <div className="flex justify-between mt-6">
               <button
-                className="px-4 py-2 ml-2 bg-orange-400 text-white rounded"
-                onClick={() => handleSubmitMeals()}
+                onClick={handleSubmitMeals}
+                className="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600 transition"
               >
                 Done
               </button>
               <button
-                className="px-4 py-2 mr-2 md:mr-0 bg-green-500 text-white rounded"
                 onClick={handleAddSection}
+                className="px-4 py-2 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition"
               >
                 Add Section
               </button>

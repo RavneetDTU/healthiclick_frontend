@@ -50,89 +50,95 @@ export function SignupForm() {
       router.push("/feature/dashboard");
     } catch (err: unknown) {
       const typedErr = err as RegisterError;
-
       const fallback =
         typedErr?.response?.data?.message ||
         typedErr?.response?.data?.detail ||
         typedErr?.message ||
         "Signup failed. Please try again.";
-
       setError(fallback);
     }
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 shadow-md bg-white rounded-md">
-      <h2 className="text-2xl font-bold mb-2">Sign Up</h2>
-      <p className="text-sm mb-4 text-gray-700 dark:text-gray-700">
+    <div className="w-full max-w-md mx-auto p-6 bg-white shadow-md rounded-lg border border-gray-100">
+      <h2 className="text-2xl font-bold text-teal-700 mb-1">Sign Up</h2>
+      <p className="text-sm text-gray-600 mb-4">
         Join HealthiClick&apos;s vibrant community today
       </p>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <div className="text-red-600 text-sm">{error}</div>}
+
         <div>
-          <label>Name</label>
+          <label className="block text-sm font-medium text-gray-700">Name</label>
           <input
-            className="w-full border px-3 py-2 rounded-md border-orange-200"
             type="text"
-            placeholder="Enter your Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            placeholder="Enter your name"
+            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-200"
             required
           />
         </div>
+
         <div>
-          <label>Email</label>
+          <label className="block text-sm font-medium text-gray-700">Email</label>
           <input
-            className="w-full border px-3 py-2 rounded-md border-orange-200"
             type="email"
-            placeholder="Enter your Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-200"
             required
           />
         </div>
+
         <div>
-          <label>Phone No.</label>
+          <label className="block text-sm font-medium text-gray-700">Phone No.</label>
           <input
-            className="w-full border px-3 py-2 rounded-md border-orange-200"
             type="tel"
-            placeholder="Enter your Number"
             value={number}
             onChange={(e) => setNumber(e.target.value)}
+            placeholder="Enter your phone number"
+            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-200"
             required
           />
         </div>
+
         <div>
-          <label>Password</label>
+          <label className="block text-sm font-medium text-gray-700">Password</label>
           <input
-            className="w-full border px-3 py-2 rounded-md border-orange-200"
             type="password"
-            placeholder="Enter Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter password"
+            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-200"
             required
           />
         </div>
+
         <div>
-          <label>Confirm Password</label>
+          <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
           <input
-            className="w-full border px-3 py-2 rounded-md border-orange-200"
             type="password"
-            placeholder="Confirm Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirm password"
+            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-200"
             required
           />
         </div>
+
         <button
           type="submit"
-          className="w-full bg-orange-300 text-black py-2 rounded hover:bg-orange-200"
+          className="w-full bg-teal-600 text-white py-2 rounded hover:bg-teal-700 transition"
         >
           Sign Up
         </button>
-        <p className="text-center text-sm">
+
+        <p className="text-center text-sm text-gray-600">
           Already have an account?{" "}
-          <Link href="/feature/login" className="text-amber-600 underline">
+          <Link href="/feature/login" className="text-teal-600 hover:underline font-medium">
             Login
           </Link>
         </p>

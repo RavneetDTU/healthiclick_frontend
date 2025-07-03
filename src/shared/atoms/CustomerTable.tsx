@@ -63,8 +63,8 @@ export function CustomerTable<T extends BaseUser>({
     });
 
   return (
-    <div className="bg-white p-4 sm:p-6 rounded shadow shadow-gray-500 dark:shadow-gray-700">
-      <h3 className="text-lg sm:text-xl font-semibold mb-4">{title}</h3>
+    <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+      <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800">{title}</h3>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <input
@@ -72,13 +72,13 @@ export function CustomerTable<T extends BaseUser>({
           placeholder="Search by name..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="border border-gray-300 dark:border-gray-500 rounded px-3 py-2 w-full sm:w-64"
+          className="border border-gray-300 rounded-md px-3 py-2 w-full sm:w-64 focus:ring-2 focus:ring-teal-400 focus:outline-none"
         />
         {filters.length > 0 && (
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="border border-gray-300 dark:border-gray-500 rounded px-3 py-2 w-full sm:w-auto"
+            className="border border-gray-300 rounded-md px-3 py-2 w-full sm:w-auto focus:ring-2 focus:ring-teal-400 focus:outline-none"
           >
             {filters.map((f) => (
               <option key={f} value={f}>
@@ -91,14 +91,14 @@ export function CustomerTable<T extends BaseUser>({
 
       <div className="overflow-x-auto">
         <table className="table-auto w-full text-sm">
-          <thead className="text-left border-b bg-gray-100 dark:bg-gray-300">
-            <tr> 
+          <thead className="text-left border-b bg-gray-100">
+            <tr>
               <th className="px-2 py-2 whitespace-nowrap">Avatar</th>
               <th className="px-2 py-2 whitespace-nowrap">Customer ID</th>
               <th className="px-2 py-2 whitespace-nowrap">Full Name</th>
               <th className="px-2 py-2 whitespace-nowrap">Email</th>
               <th className="px-2 py-2 whitespace-nowrap">Phone No</th>
-              <th className="px-2 py-2 whitespace-nowrap">Action</th>
+              <th className="px-2 py-2 whitespace-nowrap">Followup</th>
             </tr>
           </thead>
           <tbody>
@@ -112,7 +112,7 @@ export function CustomerTable<T extends BaseUser>({
               return (
                 <tr
                   key={row.id}
-                  className="border-b hover:bg-gray-50 cursor-pointer"
+                  className="border-b hover:bg-gray-50 cursor-pointer transition"
                 >
                   <td
                     className="px-2 py-2 whitespace-nowrap"

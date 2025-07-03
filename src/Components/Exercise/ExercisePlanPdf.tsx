@@ -42,30 +42,34 @@ const ExercisePlanPdfPage = () => {
   }, [user?.userid]);
 
   return (
-    <div className="min-h-screen p-6 bg-[#fef7f2]">
-      <h2 className="text-2xl font-bold mb-4 text-orange-700">Your Exercise Plan</h2>
-      <p className="mb-6 text-gray-700">
-        Hey, your dietician has uploaded your exercise plan in document format. Please download the exercise plan below.
-      </p>
+    <div className="min-h-screen p-6 bg-gray-50">
+      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-md p-6">
+        <h2 className="text-2xl font-bold mb-4 text-teal-700">Your Exercise Plan</h2>
+        <p className="mb-6 text-gray-700">
+          Hey, your dietician has uploaded your exercise plan in document format. Please download the plan below.
+        </p>
 
-      {pdfUrl ? (
-        <>
-          <iframe
-            src={pdfUrl}
-            title="Diet Plan PDF"
-            className="w-full h-[80vh] border rounded mb-4"
-          />
-          <a
-            href={pdfUrl}
-            download={`diet_plan_${user?.userid}.pdf`}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-          >
-            Download Exercise Plan
-          </a>
-        </>
-      ) : (
-        <p className="text-sm text-gray-500">Loading PDF...</p>
-      )}
+        {pdfUrl ? (
+          <>
+            <div className="rounded-md overflow-hidden border mb-4">
+              <iframe
+                src={pdfUrl}
+                title="Exercise Plan PDF"
+                className="w-full h-[80vh]"
+              />
+            </div>
+            <a
+              href={pdfUrl}
+              download={`exercise_plan_${user?.userid}.pdf`}
+              className="inline-block px-5 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
+            >
+              Download Exercise Plan
+            </a>
+          </>
+        ) : (
+          <p className="text-sm text-gray-500">Loading PDF...</p>
+        )}
+      </div>
 
       {toast && (
         <Toast

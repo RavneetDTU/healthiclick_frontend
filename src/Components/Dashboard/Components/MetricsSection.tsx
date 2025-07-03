@@ -62,10 +62,13 @@ export const MetricsSection: React.FC = () => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       {metrics.map((metric, index) => (
-        <div key={index} className="bg-orange-100 p-4 rounded shadow text-center">
-          <h4 className="text-sm text-gray-700 dark:text-gray-700 mb-1">{metric.label}</h4>
-          <p className="text-2xl font-bold">
-            {metric.value} {metric.unit}
+        <div
+          key={index}
+          className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 text-center"
+        >
+          <h4 className="text-sm text-gray-600 mb-1 font-medium">{metric.label}</h4>
+          <p className="text-2xl font-bold text-teal-700">
+            {metric.value} <span className="text-base text-gray-500">{metric.unit}</span>
           </p>
         </div>
       ))}

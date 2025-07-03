@@ -7,6 +7,7 @@ import { useReportsStore } from "./store/reportsStore";
 import { Header } from "@/shared/atoms/Header";
 import { Sidebar } from "@/shared/atoms/Sidebar";
 import { Footer } from "@/shared/atoms/Footer";
+import UploadReportSection from "./Components/UploadReport";
 
 export default function ReportsPage() {
   const { filteredReports, fetchReports, isLoading } = useReportsStore();
@@ -16,19 +17,19 @@ export default function ReportsPage() {
   }, [fetchReports]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fef7f2]">
+    <div className="min-h-screen flex flex-col bg-gray-100">
       <Header />
 
       <div className="flex flex-1">
-       <div className="hidden md:block">
-       <Sidebar />
-       </div>
+        <div className="hidden md:block">
+          <Sidebar />
+        </div>
 
         <div className="flex-1 overflow-hidden">
           <main className="p-6 overflow-y-auto h-full">
-            <div className="bg-white shadow-sm rounded mb-6">
+            <div className="bg-white shadow rounded mb-6">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-800">Health Reports</h1>
+                <h1 className="text-3xl font-bold text-gray-800">Health Reports</h1>
                 <p className="mt-2 text-gray-600">
                   View and manage all your health-related reports in one place
                 </p>
@@ -38,9 +39,11 @@ export default function ReportsPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <FilterBar />
 
+              <UploadReportSection />
+
               {isLoading ? (
                 <div className="flex justify-center items-center h-64">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
                 </div>
               ) : (
                 <div className="space-y-8 mt-6">

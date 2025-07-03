@@ -13,7 +13,6 @@ export default function FilterBar() {
   const [dateRange, setDateRange] = useState("all")
   const [categories, setCategories] = useState<string[]>([])
 
-  // Apply filters whenever filter criteria change
   useEffect(() => {
     filterReports({ searchTerm, dateRange, categories })
   }, [filterReports, searchTerm, dateRange, categories])
@@ -32,14 +31,14 @@ export default function FilterBar() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4">
+    <div className="bg-white rounded-xl shadow p-4">
       <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-grow">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-400 h-5 w-5" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
           <input
             type="text"
             placeholder="Search reports..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -49,15 +48,15 @@ export default function FilterBar() {
           Filters
           <ChevronDown className={`h-4 w-4 ml-2 transition-transform ${showFilters ? "rotate-180" : ""}`} />
         </Button>
-        <Button type="submit" className="sm:w-auto">
+        <Button type="submit" className="sm:w-auto bg-teal-500 hover:bg-teal-600 text-white">
           Search
         </Button>
       </form>
 
       {showFilters && (
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-2">Date Range</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
             <div className="flex flex-wrap gap-2">
               {[
                 { value: "all", label: "All Time" },
@@ -68,11 +67,11 @@ export default function FilterBar() {
                 <button
                   key={option.value}
                   type="button"
-                  className={`px-3 py-1.5 text-sm rounded-full ${
+                  className={`px-3 py-1.5 text-sm rounded-full border transition ${
                     dateRange === option.value
-                      ? "bg-primary-100 text-primary-800 border-primary-300"
-                      : "bg-gray-100 dark:bg-gray-100 text-gray-600 dark:text-gray-600 border-gray-200 dark:border-gray-200"
-                  } border`}
+                      ? "bg-teal-100 text-teal-800 border-teal-300"
+                      : "bg-gray-100 text-gray-600 border-gray-200"
+                  }`}
                   onClick={() => setDateRange(option.value)}
                 >
                   {option.label}
@@ -82,7 +81,7 @@ export default function FilterBar() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-2">Categories</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Categories</label>
             <div className="flex flex-wrap gap-2">
               {[
                 { value: "lab", label: "Lab Reports" },
@@ -93,11 +92,11 @@ export default function FilterBar() {
                 <button
                   key={option.value}
                   type="button"
-                  className={`px-3 py-1.5 text-sm rounded-full ${
+                  className={`px-3 py-1.5 text-sm rounded-full border transition ${
                     categories.includes(option.value)
-                      ? "bg-primary-100 text-primary-800 border-primary-300"
-                      : "bg-gray-100 dark:bg-gray-100 text-gray-700 dark:text-gray-700 border-gray-200 dark:border-gray-200"
-                  } border`}
+                      ? "bg-teal-100 text-teal-800 border-teal-300"
+                      : "bg-gray-100 text-gray-700 border-gray-200"
+                  }`}
                   onClick={() => toggleCategory(option.value)}
                 >
                   {option.label}

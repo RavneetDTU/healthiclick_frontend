@@ -44,39 +44,43 @@ export const Header = () => {
   }
 
   return (
-    <header className="w-full flex justify-between items-center px-4 py-3 md:px-6 md:py-4 border-b bg-white sticky top-0 z-10">
+    <header className="w-full flex justify-between items-center px-4 py-3 md:px-6 md:py-4 border-b sticky top-0 z-10 bg-gradient-to-r from-teal-50 to-blue-50 backdrop-blur-md shadow-sm">
       <div className="flex items-center">
         {!isDesktop && (
           <button
             onClick={() => setIsMobileMenuOpen(true)}
-            className="mr-2 p-1 rounded-md hover:bg-gray-100 md:hidden"
+            className="mr-2 p-2 rounded-xl bg-teal-100 hover:bg-teal-200 transition md:hidden"
             aria-label="Open menu"
           >
-            <FiMenu className="h-5 w-5" />
+            <FiMenu className="h-5 w-5 text-teal-700" />
           </button>
         )}
-        <h1 className="text-lg md:text-xl font-bold">Healthiclick</h1>
+        <h1 className="text-xl md:text-2xl font-semibold text-teal-700">Healthiclick</h1>
       </div>
 
       <div className="flex items-center gap-4 md:gap-6 relative">
-        <button className="p-2 rounded-md hover:bg-gray-100 font-medium">
-          {isDesktop ? "Alerts" : <FiBell className="h-5 w-5" />}
+        <button className="p-2 rounded-xl bg-blue-100 hover:bg-blue-200 transition">
+          {isDesktop ? (
+            <span className="text-blue-700 font-medium">Alerts</span>
+          ) : (
+            <FiBell className="h-5 w-5 text-blue-700" />
+          )}
         </button>
 
         {userName ? (
           <div ref={profileRef} className="relative">
             <button
-              className="p-2 rounded-md hover:bg-gray-100"
+              className="p-2 rounded-xl bg-teal-100 hover:bg-teal-200 transition"
               onClick={() => setShowProfileMenu((prev) => !prev)}
             >
-              <FiUser className="h-5 w-5" />
+              <FiUser className="h-5 w-5 text-teal-700" />
             </button>
             {showProfileMenu && (
-              <div className="absolute right-0 top-10 w-40 bg-white shadow-md rounded-md p-3 z-50">
-                <p className="text-sm text-gray-700 dark:text-gray-700 mb-2 font-medium truncate">{userName}</p>
+              <div className="absolute right-0 top-10 w-44 bg-white shadow-lg rounded-xl p-4 z-50 border border-gray-100">
+                <p className="text-sm text-gray-800 font-medium truncate mb-2">{userName}</p>
                 <button
                   onClick={handleLogout}
-                  className="w-full bg-red-100 hover:bg-red-200 text-red-700 text-sm py-1 px-2 rounded"
+                  className="w-full text-sm py-1.5 px-3 rounded-md bg-red-100 hover:bg-red-200 text-red-700 font-medium"
                 >
                   Logout
                 </button>
@@ -85,7 +89,7 @@ export const Header = () => {
           </div>
         ) : (
           <button
-            className="bg-orange-400 hover:bg-orange-300 text-white px-3 py-1 text-sm rounded"
+            className="bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-400 hover:to-blue-400 text-white px-4 py-1.5 text-sm rounded-xl font-medium transition"
             onClick={() => router.push("/feature/login")}
           >
             Sign In
@@ -95,21 +99,21 @@ export const Header = () => {
 
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-50 md:hidden"
+          className="fixed inset-0 bg-black/40 z-50 md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         >
           <div
-            className="absolute top-0 left-0 w-64 h-full bg-white"
+            className="absolute top-0 left-0 w-64 h-full bg-white rounded-r-xl shadow-lg"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center p-4 border-b">
-              <h2 className="font-bold">Healthiclick</h2>
+              <h2 className="text-lg font-semibold text-teal-700">Healthiclick</h2>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-1 rounded-md hover:bg-gray-100"
+                className="p-1 rounded-xl bg-gray-100 hover:bg-gray-200"
                 aria-label="Close menu"
               >
-                <FiX className="h-5 w-5" />
+                <FiX className="h-5 w-5 text-gray-600" />
               </button>
             </div>
             <MobileSidebar />

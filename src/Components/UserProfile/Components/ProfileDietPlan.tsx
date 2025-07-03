@@ -99,7 +99,7 @@ export const ProfileDietPlan = () => {
     const formattedPayload = Object.entries(updatedData).map(
       ([category, items]) => ({
         name: category,
-        time: new Date().toISOString(), // You can adjust this based on your actual time field
+        time: new Date().toISOString(),
         weekday: weekDay,
         elements: items.map((item) => ({
           mealname: item.meal_name,
@@ -129,7 +129,7 @@ export const ProfileDietPlan = () => {
         throw new Error(`Failed to update diet: ${text}`);
       }
 
-      setMeals(updatedData); // Optimistically update state
+      setMeals(updatedData);
       setToast({ message: "Diet updated successfully", type: "success" });
     } catch (error: unknown) {
       console.error("PUT request failed:", error);
@@ -141,16 +141,18 @@ export const ProfileDietPlan = () => {
   };
 
   return (
-    <div className="h-fit bg-[#fef7f2]">
+    <div className="h-fit bg-gray-100 dark:bg-gray-900">
       <main className="p-4 sm:p-6 overflow-y-auto w-full">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-4">Diet Plan</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-gray-800 dark:text-gray-100">
+          Diet Plan
+        </h2>
 
         <div className="mb-6">
-          <label className="text-base sm:text-lg font-medium mr-2 sm:mr-4">
+          <label className="text-base sm:text-lg font-medium mr-2 sm:mr-4 text-gray-700 dark:text-gray-200">
             Weekdays
           </label>
           <select
-            className="border rounded px-3 py-1 text-sm bg-white"
+            className="border rounded px-3 py-1 text-sm bg-white dark:bg-gray-800 dark:border-gray-700 text-gray-700 dark:text-gray-200"
             value={weekDay}
             onChange={(e) => setWeekDay(e.target.value)}
           >
@@ -163,7 +165,7 @@ export const ProfileDietPlan = () => {
           </select>
 
           <button onClick={openEditPopup}>
-            <span className="ml-2 text-sm text-blue-600 hover:underline">
+            <span className="ml-2 text-sm text-blue-600 hover:underline dark:text-blue-400">
               Edit
             </span>
           </button>
@@ -172,29 +174,46 @@ export const ProfileDietPlan = () => {
         {Object.entries(meals).map(([mealTitle, items]) => (
           <div
             key={mealTitle}
-            className="mb-2 bg-white rounded shadow-md border border-gray-300 dark:border-gray-700"
+            className="mb-2 bg-white dark:bg-gray-800 rounded shadow-md border border-gray-300 dark:border-gray-700"
           >
-            <div className="border-b px-4 py-2 font-semibold text-base sm:text-lg">
+            <div className="border-b px-4 py-2 font-semibold text-base sm:text-lg text-gray-800 dark:text-gray-100">
               {mealTitle}
             </div>
             <div className="px-2 sm:px-4 py-2 overflow-x-auto">
-              <div className="min-w-fit md:min-w-full">
-                {items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex md:justify-between items-center py-2 rounded px-2 hover:bg-orange-100 whitespace-nowrap"
-                  >
-                    <div className="w-32 md:w-60 text-sm sm:text-base capitalize ">
-                      {item.meal_name}
-                    </div>
-                    <div className="w-28 md:w-48 text-sm sm:text-base ">
-                      {item.quantity}
-                    </div>
-                    <div className="w-28 md:w-72 text-sm sm:text-base ">
-                      {item.recipe}
-                    </div>
-                  </div>
-                ))}
+              <div className="min-w-full">
+                <table className="w-full table-auto border-collapse">
+                  <thead className="bg-gray-100 dark:bg-gray-700">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 w-1/3">
+                        Meal Name
+                      </th>
+                      <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 w-1/3">
+                        Quantity
+                      </th>
+                      <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 w-1/3">
+                        Recipe
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {items.map((item) => (
+                      <tr
+                        key={item.id}
+                        className="hover:bg-orange-100 dark:hover:bg-gray-700"
+                      >
+                        <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 capitalize">
+                          {item.meal_name}
+                        </td>
+                        <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
+                          {item.quantity}
+                        </td>
+                        <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
+                          {item.recipe}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -216,6 +235,8 @@ export const ProfileDietPlan = () => {
         onClose={() => setEditPopupOpen(false)}
         onSave={handleEditSave}
         visibleFields={["meal_name", "quantity", "recipe"]}
+        sectionNameKey="category"
+        itemDefaults={{ meal_name: "", quantity: "", recipe: "" } as MealItem}
       />
     </div>
   );

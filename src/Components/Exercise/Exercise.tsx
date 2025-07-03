@@ -275,40 +275,80 @@ export const ExercisePage = () => {
               <div className="border-b px-4 py-2 font-semibold text-base sm:text-lg">
                 {sessionTitle}
               </div>
-              <div className="px-2 sm:px-4 py-2">
-                {items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex flex-wrap justify-between items-center py-2 rounded px-2 hover:bg-orange-100"
-                  >
-                    <div className="w-full sm:w-48 text-sm sm:text-base capitalize">
-                      {item.exercise_name}
-                    </div>
-                    <div className="w-1/3 sm:w-24 text-sm">{item.duration}</div>
-                    <a
-                      href={item.video_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-1/3 text-blue-600 underline text-xs sm:text-sm"
-                    >
-                      {item.video_link}
-                    </a>
-                    <div
-                      className="text-green-500 text-xl cursor-pointer"
-                      onClick={() =>
-                        handleTrackExercise(item.id, true, "Completed")
-                      }
-                    >
-                      <FaCheck />
-                    </div>
-                    <div
-                      className="text-red-500 text-xl cursor-pointer"
-                      onClick={() => openModal(item)}
-                    >
-                      <ImCross />
-                    </div>
-                  </div>
-                ))}
+              <div className="px-2 sm:px-4 py-2 overflow-x-auto">
+                <div className="inline-block min-w-full align-middle">
+                  <table className="w-full table-auto border-collapse">
+                    <thead className="bg-gray-100 dark:bg-gray-700">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                          Exercise Name
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                          Duration
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                          Video Link
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                          Comment
+                        </th>
+                        <th className="px-4 py-2 text-center text-sm font-semibold text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {items.map((item) => (
+                        <tr
+                          key={item.id}
+                          className="hover:bg-orange-100 dark:hover:bg-gray-700"
+                        >
+                          <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 capitalize whitespace-nowrap">
+                            {item.exercise_name}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                            {item.duration}
+                          </td>
+                          <td className="px-4 py-2 text-sm whitespace-nowrap">
+                            <a
+                              href={item.video_link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 underline text-xs sm:text-sm"
+                            >
+                              {item.video_link}
+                            </a>
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                            {item.comment}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-center text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                            <div className="flex justify-center items-center gap-4">
+                              <div
+                                className="text-green-500 text-xl cursor-pointer"
+                                onClick={() =>
+                                  handleTrackExercise(
+                                    item.id,
+                                    true,
+                                    "Completed"
+                                  )
+                                }
+                              >
+                                <FaCheck />
+                              </div>
+                              <div
+                                className="text-red-500 text-xl cursor-pointer"
+                                onClick={() => openModal(item)}
+                              >
+                                <ImCross />
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           ))}

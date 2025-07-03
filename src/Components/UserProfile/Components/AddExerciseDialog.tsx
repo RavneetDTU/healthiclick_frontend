@@ -163,15 +163,15 @@ export default function AddExerciseDialog() {
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
         <div
           ref={dialogRef}
-          className="bg-white rounded-lg shadow-lg w-full md:max-w-[90%] max-h-screen overflow-y-auto"
+          className="bg-white rounded-xl shadow-lg w-full md:max-w-[90%] max-h-screen overflow-y-auto"
         >
-          <h2 className="text-xl font-semibold text-center mt-4">Add Exercises</h2>
+          <h2 className="text-xl font-semibold text-center mt-5 text-teal-700">Add Exercises</h2>
 
           <div className="text-center mt-2 mb-4">
             <select
               value={weekday}
               onChange={(e) => setWeekday(e.target.value)}
-              className="w-40 p-2 border rounded"
+              className="w-40 p-2 border rounded text-sm"
             >
               {["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].map(
                 (day) => (
@@ -183,19 +183,19 @@ export default function AddExerciseDialog() {
             </select>
           </div>
 
-          <div className="px-6 pb-4 space-y-6">
+          <div className="px-6 pb-6 space-y-8">
             {sections.map((section, sectionIndex) => (
-              <div key={section.id} className="border-t pt-4">
-                <div className="flex gap-2 md:gap-3 items-center  justify-between mb-2">
+              <div key={section.id} className="border-t pt-4 space-y-4">
+                <div className="flex flex-col md:flex-row justify-between gap-3 items-center">
                   <input
                     type="text"
                     value={section.newSectionName}
                     onChange={(e) => handleSectionNameInputChange(sectionIndex, e.target.value)}
-                    className="border px-2 py-1 rounded text-sm"
+                    className="border px-3 py-2 rounded text-sm w-full md:w-1/2"
                   />
 
                   <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium">Time:</label>
+                    <label className="text-sm font-medium text-gray-600">Time:</label>
                     <input
                       type="time"
                       value={section.time}
@@ -204,14 +204,14 @@ export default function AddExerciseDialog() {
                         updated[sectionIndex].time = e.target.value;
                         setSections(updated);
                       }}
-                      className="border px-2 py-1 rounded text-sm md:mr-2"
+                      className="border px-3 py-2 rounded text-sm"
                     />
                   </div>
                 </div>
 
-                <div className="max-h-52 overflow-y-auto space-y-7 md:space-y-3 md:pr-2">
+                <div className="space-y-4">
                   {section.exercises.map((ex, exerciseIndex) => (
-                    <div className="flex gap-4 flex-wrap" key={exerciseIndex}>
+                    <div key={exerciseIndex} className="flex flex-wrap gap-3">
                       <input
                         type="text"
                         placeholder="Exercise name"
@@ -228,7 +228,7 @@ export default function AddExerciseDialog() {
                         onChange={(e) =>
                           handleInputChange(sectionIndex, exerciseIndex, "duration", e.target.value)
                         }
-                        className="w-40 p-2 border rounded"
+                        className="w-36 p-2 border rounded"
                       />
                       <input
                         type="text"
@@ -248,6 +248,8 @@ export default function AddExerciseDialog() {
                         }
                         className="flex-1 p-2 border rounded"
                       />
+
+                      
                     </div>
                   ))}
                 </div>
@@ -255,7 +257,7 @@ export default function AddExerciseDialog() {
                 <button
                   type="button"
                   onClick={() => handleAddMoreExercise(sectionIndex)}
-                  className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                  className="mt-2 px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700"
                 >
                   Add More
                 </button>
@@ -265,13 +267,13 @@ export default function AddExerciseDialog() {
             <div className="flex justify-between mt-6">
               <button
                 onClick={handleDone}
-                className="px-4 py-2 bg-orange-400 text-white rounded hover:bg-orange-500"
+                className="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600"
               >
                 Done
               </button>
               <button
                 onClick={handleAddSection}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                className="px-4 py-2 bg-gray-100 text-gray-800 rounded hover:bg-gray-200"
               >
                 Add Section
               </button>
