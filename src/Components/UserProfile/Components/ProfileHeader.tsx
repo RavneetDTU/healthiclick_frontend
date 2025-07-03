@@ -16,11 +16,10 @@ export default function ProfileHeader() {
   const { user, setUser, setDialogOpen } = useProfileStore();
   const { isMobile } = useDevice();
   const [hasMeals, setHasMeals] = useState(false);
-  const [structuredExercises, setStructuredExercises] = useState<Record<string, any>>({});
   const [exerciseCount, setExerciseCount] = useState(0);
   const [mealCount, setMealCount] = useState(0);
-  const [weekDay, setWeekDay] = useState<string>("Monday"); 
-    const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [weekDay] = useState<string>("Monday"); 
+    const [, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
 
   // Fetch user profile data
@@ -83,7 +82,6 @@ export default function ProfileHeader() {
   
         const data: ExerciseSection[] = await response.json();
   
-        // Check if data exists (i.e., check if any exercises exist)
         const exercisesExist = data.some((section) => section.elements && section.elements.length > 0);
   
         setExerciseCount(Number(exercisesExist)); // Convert boolean to number
