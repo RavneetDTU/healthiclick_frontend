@@ -14,7 +14,7 @@ export default function ProfilePage() {
   const { dialogOpen } = useProfileStore();
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fef7f2]">
+    <div className="min-h-screen flex flex-col bg-gray-100">
       <Header />
 
       <div className="flex flex-1">
@@ -22,12 +22,11 @@ export default function ProfilePage() {
           <Sidebar />
         </div>
 
-        <div className="w-full bg-gray-50 dark:bg-gray-900">
+        <div className="w-full bg-gray-50">
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="space-y-6">
               <ProfileHeader />
               <ProfileTabs />
-              {/* <ActivityCharts /> */}
             </div>
             {dialogOpen.mealSeprate && <AddMealDialog />}
             {dialogOpen.mealDoc && <DocUploadMeal />}
@@ -36,8 +35,6 @@ export default function ProfilePage() {
           </main>
         </div>
       </div>
-
-      
     </div>
   );
 }

@@ -16,11 +16,11 @@ const DashboardPage = () => {
   }, [loadDashboardData]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fef7f2]">
-      {/* Header at top */}
+    <div className="min-h-screen flex flex-col bg-gray-100 text-gray-800">
+      {/* Header */}
       <Header />
 
-      {/* Main content with Sidebar and sections */}
+      {/* Main content */}
       <div className="flex flex-1">
         {/* Sidebar */}
         <div className="hidden md:block">
@@ -28,14 +28,14 @@ const DashboardPage = () => {
         </div>
 
         {/* Page content */}
-        <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-6">Dashboard</h1>
+        <main className="flex-1 px-4 sm:px-6 md:px-8 py-6 overflow-y-auto">
+          <h1 className="text-3xl font-semibold text-teal-700 mb-6">Dashboard</h1>
           <MetricsSection />
           <WeeklyGraphSection />
-        </div>
+        </main>
       </div>
 
-      {/* Footer always at bottom */}
+      {/* Footer */}
       <Footer />
     </div>
   );

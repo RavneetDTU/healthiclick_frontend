@@ -19,11 +19,13 @@ export const DietPlan = () => {
   const [selectedMeal, setSelectedMeal] = useState<MealItem | null>(null);
   const [reason, setReason] = useState("");
   const [notes, setNotes] = useState("");
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
   const [hasMeals, setHasMeals] = useState(false);
   const [pdfAvailable, setPdfAvailable] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
-  
 
   useEffect(() => {
     const fetchDietPlan = async () => {
@@ -32,7 +34,9 @@ export const DietPlan = () => {
 
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/diet-plan/${user.userid}?weekday=${weekDay.toLowerCase()}`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/diet-plan/${
+            user.userid
+          }?weekday=${weekDay.toLowerCase()}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -46,26 +50,36 @@ export const DietPlan = () => {
 
         const data: DietSection[] = await res.json();
 
-        const structured = data.reduce((acc: Record<string, MealItem[]>, section: DietSection, index: number) => {
-          const category = section.name || `Section ${index + 1}`;
-          const meals = section.elements.map((el, idx) => ({
-            id: index * 100 + idx,
-            meal_name: el.mealname,
-            quantity: el.quantity,
-            recipe: el.recipe,
-            weekday: section.weekday,
-            category,
-          }));
-          acc[category] = meals;
-          return acc;
-        }, {});
+        const structured = data.reduce(
+          (
+            acc: Record<string, MealItem[]>,
+            section: DietSection,
+            index: number
+          ) => {
+            const category = section.name || `Section ${index + 1}`;
+            const meals = section.elements.map((el, idx) => ({
+              id: index * 100 + idx,
+              meal_name: el.mealname,
+              quantity: el.quantity,
+              recipe: el.recipe,
+              weekday: section.weekday,
+              category,
+            }));
+            acc[category] = meals;
+            return acc;
+          },
+          {}
+        );
 
         setMeals(structured);
         setHasMeals(Object.keys(structured).length > 0);
       } catch (error: unknown) {
         if (error instanceof Error) {
           console.error("Diet plan fetch failed:", error);
-          setToast({ message: error.message || "Failed to load meals", type: "error" });
+          setToast({
+            message: error.message || "Failed to load meals",
+            type: "error",
+          });
         } else {
           setToast({ message: "Unknown error occurred", type: "error" });
         }
@@ -81,18 +95,21 @@ export const DietPlan = () => {
       if (!user?.userid || !token) return;
 
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/diet-plan-pdf/${user.userid}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/diet-plan-pdf/${user.userid}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         console.log("PDF check status:", res.status);
         setPdfAvailable(res.ok || res.status === 304);
 
-         // Now fetch uploaded_at from exercise plan
-         const planRes = await fetch(
+        // Now fetch uploaded_at from exercise plan
+        const planRes = await fetch(
           `${process.env.NEXT_PUBLIC_BASE_URL}/diet-plans/${user.userid}`,
           {
             headers: {
@@ -126,7 +143,11 @@ export const DietPlan = () => {
     checkPdfAvailability();
   }, [user?.userid]);
 
-  const handleTrackMeal = async (meal_id: number, followed: boolean, reason: string) => {
+  const handleTrackMeal = async (
+    meal_id: number,
+    followed: boolean,
+    reason: string
+  ) => {
     console.log("Tracked:", { meal_id, followed, reason });
     setToast({
       message: followed ? "Diet followed" : "Meal not followed",
@@ -161,7 +182,9 @@ export const DietPlan = () => {
           <h2 className="text-2xl sm:text-3xl font-bold mb-4">Diet Plan</h2>
 
           <div className="mb-6">
-            <label className="text-base sm:text-lg font-medium mr-2 sm:mr-4">Weekdays</label>
+            <label className="text-base sm:text-lg font-medium mr-2 sm:mr-4">
+              Weekdays
+            </label>
             <select
               className="border rounded px-3 py-1 text-sm bg-white"
               value={weekDay}
@@ -200,29 +223,72 @@ export const DietPlan = () => {
 
           {Object.entries(meals).map(([mealTitle, items]) => (
             <div key={mealTitle} className="mb-6 bg-white rounded shadow-md">
-              <div className="border-b px-4 py-2 font-semibold text-base sm:text-lg">{mealTitle}</div>
-              <div className="px-2 sm:px-4 py-2">
-                {items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex flex-wrap justify-between items-center py-2 rounded px-2 hover:bg-orange-100"
-                  >
-                    <div className="w-1/2 sm:w-48 text-sm sm:text-base capitalize">{item.meal_name}</div>
-                    <div className="w-1/3 sm:w-28 text-sm sm:text-base">{item.quantity}</div>
-                    <div
-                      className="text-green-500 text-xl cursor-pointer"
-                      onClick={() => handleTrackMeal(item.id, true, "Diet followed")}
-                    >
-                      <FaCheck />
-                    </div>
-                    <div
-                      className="text-red-500 text-xl cursor-pointer"
-                      onClick={() => openModal(item)}
-                    >
-                      <ImCross />
-                    </div>
-                  </div>
-                ))}
+              <div className="border-b px-4 py-2 font-semibold text-base sm:text-lg">
+                {mealTitle}
+              </div>
+
+              {/* Scrollable table container */}
+              <div className="px-2 sm:px-4 py-2 overflow-x-auto">
+                <div className="inline-block min-w-full align-middle">
+                  <table className="w-full table-auto border-collapse">
+                    <thead className="bg-gray-100 dark:bg-gray-700">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                          Meal Name
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                          Quantity
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                          Recipe
+                        </th>
+                        <th className="px-4 py-2 text-center text-sm font-semibold text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {items.map((item) => (
+                        <tr
+                          key={item.id}
+                          className="hover:bg-orange-100 dark:hover:bg-gray-700"
+                        >
+                          <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 capitalize whitespace-nowrap">
+                            {item.meal_name}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                            {item.quantity}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                            {item.recipe}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-center text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                            <div className="flex justify-center items-center gap-4">
+                              <div
+                                className="text-green-500 text-xl cursor-pointer"
+                                onClick={() =>
+                                  handleTrackMeal(
+                                    item.id,
+                                    true,
+                                    "Diet followed"
+                                  )
+                                }
+                              >
+                                <FaCheck />
+                              </div>
+                              <div
+                                className="text-red-500 text-xl cursor-pointer"
+                                onClick={() => openModal(item)}
+                              >
+                                <ImCross />
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           ))}

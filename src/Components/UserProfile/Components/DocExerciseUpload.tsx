@@ -29,18 +29,18 @@ export default function DocUploadExercise() {
       showToast("Please upload a document or image before saving.", "error")
       return
     }
-  
+
     const token = localStorage.getItem("token")
     const userId = user?.userid
-  
+
     if (!token || !userId) {
       showToast("User not authenticated", "error")
       return
     }
-  
+
     const formData = new FormData()
     formData.append("file", file)
-  
+
     try {
       const response = await fetch(`https://xyz.healthiclick.com/exercise-plan/${userId}`, {
         method: "POST",
@@ -49,23 +49,22 @@ export default function DocUploadExercise() {
         },
         body: formData,
       })
-  
+
       const responseText = await response.text()
       console.log("Upload response:", response.status, responseText)
-  
+
       if (!response.ok) {
         throw new Error(`Upload failed: ${response.status}`)
       }
-  
+
       showToast("Exercise uploaded successfully", "success")
       setFile(null)
       setDialogOpen("exerciseDoc", false)
     } catch (error) {
       console.error("Upload error:", error)
-      showToast("Failed to upload diet plan. Please try again.", "error")
+      showToast("Failed to upload exercise document. Please try again.", "error")
     }
   }
-  
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -74,7 +73,7 @@ export default function DocUploadExercise() {
       }
     }
 
-    if (dialogOpen.mealDoc) {
+    if (dialogOpen.exerciseDoc) {
       document.addEventListener("mousedown", handleClickOutside)
       document.body.style.overflow = "hidden"
     }
@@ -94,16 +93,15 @@ export default function DocUploadExercise() {
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
         <div
           ref={dialogRef}
-          className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full ${isMobile ? "max-w-[95%]" : "max-w-md"}`}
+          className={`bg-white rounded-xl shadow-lg w-full ${isMobile ? "max-w-[95%]" : "max-w-md"} overflow-hidden`}
           role="dialog"
           aria-modal="true"
         >
-          <div className="p-4 sm:p-6">
-            <h2 className="text-lg sm:text-xl font-semibold mb-4">Upload Exercise Document</h2>
+          <div className="p-5">
+            <h2 className="text-xl font-semibold text-teal-700 text-center mb-4">Upload Exercise Document</h2>
 
             <div className="space-y-4">
-              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center relative">
-                {/* General file input */}
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center relative bg-gray-50">
                 <input
                   type="file"
                   accept="image/*,.pdf,.doc,.docx"
@@ -113,12 +111,11 @@ export default function DocUploadExercise() {
                 />
                 <label
                   htmlFor="file-upload"
-                  className="cursor-pointer text-orange-600 hover:text-orange-700 dark:text-orange-400 block"
+                  className="cursor-pointer text-teal-600 hover:text-teal-700 font-medium"
                 >
                   Click to select a file
                 </label>
 
-                {/* Hidden input for camera */}
                 <input
                   type="file"
                   accept="image/*"
@@ -129,20 +126,18 @@ export default function DocUploadExercise() {
                 />
                 <FaCamera
                   size={22}
-                  className="absolute top-2 right-2 text-orange-500 cursor-pointer"
+                  className="absolute top-2 right-2 text-teal-500 hover:text-teal-600 cursor-pointer"
                   onClick={() => document.getElementById("camera-input")?.click()}
                   title="Capture Image from Camera"
                 />
 
-                <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-                  Supported formats: Images, PDF, DOC, DOCX
-                </p>
+                <p className="text-sm text-gray-500 mt-1">Supported: Images, PDF, DOC, DOCX</p>
               </div>
 
               {file && (
-                <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                  <p className="text-gray-600 dark:text-gray-500 text-sm font-medium">Selected File:</p>
-                  <p className="text-sm">{file.name}</p>
+                <div className="mt-2 p-3 bg-white border rounded-md shadow-sm">
+                  <p className="text-sm font-medium text-gray-700">Selected File:</p>
+                  <p className="text-sm text-gray-600 truncate">{file.name}</p>
                   {file.type === "application/pdf" ? (
                     <iframe
                       src={URL.createObjectURL(file)}
@@ -161,17 +156,17 @@ export default function DocUploadExercise() {
             </div>
           </div>
 
-          <div className="flex justify-between items-center p-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex justify-between items-center px-5 py-3 border-t border-gray-200">
             <button
               type="button"
               onClick={() => setDialogOpen("exerciseDoc", false)}
-              className="text-sm text-gray-500 dark:text-gray-500 hover:underline"
+              className="text-sm text-gray-500 hover:text-gray-700"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-2 text-sm bg-orange-600 text-white rounded-md hover:bg-orange-700"
+              className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition"
             >
               Save
             </button>

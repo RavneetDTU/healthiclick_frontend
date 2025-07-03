@@ -119,7 +119,7 @@ const AllCustomer = () => {
   }, [setDashboardData]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fef7f2]">
+    <div className="min-h-screen flex flex-col bg-[#f9fafb]">
       <Header />
 
       <div className="flex flex-1">
@@ -127,8 +127,8 @@ const AllCustomer = () => {
           <Sidebar />
         </div>
 
-        <main className="p-6 overflow-y-auto w-full ">
-          <h2 className="text-3xl font-bold mb-6">Dashboard</h2>
+        <main className="p-6 overflow-y-auto w-full">
+          <h2 className="text-3xl font-bold mb-6 text-gray-800">Dashboard</h2>
 
           <div className="grid md:grid-cols-3 gap-6 mb-8 sm:grid-cols-1 text-center md:text-start">
             <MetricCard
@@ -155,7 +155,7 @@ const AllCustomer = () => {
               filters={["All", Status.Active, Status.Pending, Status.Inactive]}
               renderActions={() => (
                 <select
-                  className="border rounded px-2 py-1"
+                  className="border border-gray-300 rounded px-2 py-1 bg-white text-sm"
                   onChange={(e) => {
                     if (e.target.value === "No") {
                       setShowPopup(true);
@@ -218,7 +218,7 @@ const AllCustomer = () => {
           </div>
         </main>
       </div>
-      
+
       <Footer />
     </div>
   );

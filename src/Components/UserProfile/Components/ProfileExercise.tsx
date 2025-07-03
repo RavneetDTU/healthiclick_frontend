@@ -7,21 +7,21 @@ import { weekDays } from "@/Components/DietPlan/store/DietStore";
 import { useProfileStore } from "../store/userProfileStore";
 import { useDietPlanStore } from "@/Components/DietPlan/store/DietStore";
 
-interface ExerciseElement {
+export interface ExerciseElement {
   exercise_name: string;
   duration: string;
   video_link: string;
   comment?: string;
 }
 
-interface ExerciseSection {
+export interface ExerciseSection {
   name: string;
   time: string;
   weekday: string;
   elements: ExerciseElement[];
 }
 
-interface StructuredExercise extends ExerciseElement {
+export interface StructuredExercise extends ExerciseElement {
   id: number;
   weekday: string;
   category: string;
@@ -76,7 +76,9 @@ function ProfileExercise() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/exercises?user_id=${user.userid}&weekday=${weekDay.toLowerCase()}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/exercises?user_id=${
+          user.userid
+        }&weekday=${weekDay.toLowerCase()}`,
         {
           method: "PUT",
           headers: {
@@ -176,7 +178,7 @@ function ProfileExercise() {
   }, [user?.userid, weekDay]);
 
   return (
-    <div className="h-fit bg-[#fef7f2]">
+    <div className="h-fit bg-gray-50">
       <div className="p-2 md:p-4 overflow-y-auto w-full">
         <h2 className="text-2xl sm:text-3xl font-bold mb-4">Exercise Plan</h2>
 
@@ -198,7 +200,7 @@ function ProfileExercise() {
           </select>
 
           <button onClick={openEditPopup}>
-            <span className="ml-2 text-sm text-blue-600 hover:underline">
+            <span className="ml-2 text-sm text-teal-600 hover:underline">
               Edit
             </span>
           </button>
@@ -209,30 +211,56 @@ function ProfileExercise() {
             <div className="border-b px-4 py-2 font-semibold text-base sm:text-lg">
               {sessionTitle}
             </div>
-          <div className="px-2 sm:px-4 py-2 overflow-x-auto"> 
-          <div className="min-w-fit md:min-w-full">
-              {items.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex gap-5 md:justify-between items-center py-2 rounded px-2 hover:bg-orange-100 whitespace-nowrap"
-                  >
-                  <div className="w-44 md:w-48 text-sm sm:text-base capitalize">
-                    {item.exercise_name}
-                  </div>
-                  <div className="w-24 md:w-32 text-sm ">{item.duration}</div>
-                  <a
-                    href={item.video_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-1/3 text-blue-600 underline text-xs sm:text-sm"
-                  >
-                    {item.video_link}
-                  </a>
-                  <div className="w-24 md:w-70 text-sm">{item.comment}</div>
-                </div>
-              ))}
+            <div className="px-2 sm:px-4 py-2 overflow-x-auto">
+              <div className="min-w-full">
+                <table className="w-full table-auto border-collapse">
+                  <thead className="bg-gray-100 dark:bg-gray-700">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 w-1/4">
+                        Exercise Name
+                      </th>
+                      <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 w-1/4">
+                        Duration
+                      </th>
+                      <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 w-1/4">
+                        Video Link
+                      </th>
+                      <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 w-1/4">
+                        Comment
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {items.map((item) => (
+                      <tr
+                        key={item.id}
+                        className="hover:bg-teal-50 dark:hover:bg-gray-700"
+                      >
+                        <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 capitalize">
+                          {item.exercise_name}
+                        </td>
+                        <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
+                          {item.duration}
+                        </td>
+                        <td className="px-4 py-2 text-sm">
+                          <a
+                            href={item.video_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline text-xs sm:text-sm"
+                          >
+                            {item.video_link}
+                          </a>
+                        </td>
+                        <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
+                          {item.comment}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
           </div>
         ))}
       </div>
@@ -251,12 +279,16 @@ function ProfileExercise() {
         groupedData={editInitialData}
         onClose={() => setEditPopupOpen(false)}
         onSave={handleEditSave}
-        visibleFields={[
-          "exercise_name",
-          "duration",
-          "video_link",
-          "comment",
-        ]}
+        visibleFields={["exercise_name", "duration", "video_link", "comment"]}
+        sectionNameKey="category"
+        itemDefaults={
+          {
+            exercise_name: "",
+            duration: "",
+            video_link: "",
+            comment: "",
+          } as StructuredExercise
+        }
       />
     </div>
   );

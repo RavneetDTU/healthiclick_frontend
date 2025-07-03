@@ -5,8 +5,8 @@ import Link from "next/link";
 
 const navItems = [
   { label: "Customers", href: "/feature/allCustomer" },
-  { label: "All Leads", href: "#" },
-  { label: "Tasks", href: "#" },
+  // { label: "All Leads", href: "#" },
+  // { label: "Tasks", href: "#" },
   { label: "Dashboard", href: "/feature/dashboard" },
   { label: "Daily Checkin", href: "/feature/dailyCheckin" },
   { label: "Sessions", href: "/feature/session" },
@@ -26,13 +26,13 @@ export const Sidebar = () => {
   }, []);
 
   return (
-    <aside className="w-56 h-full flex flex-col items-center bg-white shadow-md shadow-gray-500 dark:shadow-gray-500 p-4">
+    <aside className="w-60 h-full flex flex-col items-start bg-white shadow-md p-5 rounded-tr-2xl rounded-br-2xl">
       {isAdmin && (
-        <div className="mb-8">
-          <h2 className="text-xs text-gray-700 dark:text-gray-700 mb-2">YOU</h2>
-          {navItems.slice(0, 3).map((item) => (
+        <div className="mb-10 w-full">
+          <h2 className="text-[11px] tracking-wide text-teal-600 font-semibold mb-3">Admin</h2>
+          {navItems.slice(0, 1).map((item) => (
             <Link href={item.href} key={item.label}>
-              <div className="mb-4 font-semibold cursor-pointer hover:text-orange-600 transition-colors">
+              <div className="mb-2 px-3 py-2 rounded-lg text-gray-700 font-medium cursor-pointer hover:bg-teal-100 hover:text-teal-700 transition-colors">
                 {item.label}
               </div>
             </Link>
@@ -40,11 +40,11 @@ export const Sidebar = () => {
         </div>
       )}
 
-      <div>
-        <h2 className="text-xs text-gray-700 dark:text-gray-700 mb-2">COMPANY</h2>
-        {navItems.slice(3).map((item) => (
+      <div className="w-full">
+        <h2 className="text-[11px] tracking-wide text-teal-600 font-semibold mb-3">Welcome</h2>
+        {navItems.slice(1).map((item) => (
           <Link href={item.href} key={item.label}>
-            <div className="mb-4 font-semibold cursor-pointer hover:text-orange-600 transition-colors">
+            <div className="mb-2 px-3 py-2 rounded-lg text-gray-700 font-medium cursor-pointer hover:bg-teal-100 hover:text-teal-700 transition-colors">
               {item.label}
             </div>
           </Link>

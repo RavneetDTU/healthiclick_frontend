@@ -3,14 +3,14 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 const navItems = [
-  { label: "Customers", href: "/feature/allCustomer", group: "YOU" },
-  { label: "All Leads", href: "#", group: "YOU" },
-  { label: "Tasks", href: "#", group: "YOU" },
-  { label: "Dashboard", href: "/feature/dashboard", group: "COMPANY" },
-  { label: "Sessions", href: "/feature/session", group: "COMPANY" },
-  { label: "Diet Plan", href: "/feature/dietPlan", group: "COMPANY" },
-  { label: "Exercise", href: "/feature/exercise", group: "COMPANY" },
-  { label: "Reports", href: "/feature/reports", group: "COMPANY" },
+  { label: "Customers", href: "/feature/allCustomer", group: "ADMIN" },
+  // { label: "All Leads", href: "#", group: "YOU" },
+  // { label: "Tasks", href: "#", group: "YOU" },
+  { label: "Dashboard", href: "/feature/dashboard", group: "WELCOME" },
+  { label: "Sessions", href: "/feature/session", group: "WELCOME" },
+  { label: "Diet Plan", href: "/feature/dietPlan", group: "WELCOME" },
+  { label: "Exercise", href: "/feature/exercise", group: "WELCOME" },
+  { label: "Reports", href: "/feature/reports", group: "WELCOME" },
 ]
 
 export const MobileSidebar = () => {

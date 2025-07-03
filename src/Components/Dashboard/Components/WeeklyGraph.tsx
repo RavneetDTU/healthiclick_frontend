@@ -49,27 +49,30 @@ export const WeeklyGraphSection: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-white p-4 rounded shadow">
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
-        <h3 className="text-lg font-semibold mb-2 sm:mb-0">Weekly Graphs</h3>
+        <h3 className="text-xl font-semibold text-teal-700 mb-2 sm:mb-0">Weekly Graphs</h3>
         <input
           type="text"
           placeholder="Search for a metric"
-          className="border rounded px-3 py-1 text-sm"
+          className="border border-gray-300 rounded-md px-3 py-1.5 text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-teal-300"
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         {chartData.map((chart, idx) => (
           <GraphCard key={idx} label={chart.label} values={chart.values} />
         ))}
       </div>
 
-      <div className="mt-4 text-right">
-        <a href="#" className="text-red-600 text-sm font-medium hover:underline">
+      {/* <div className="mt-6 text-right">
+        <a
+          href="#"
+          className="text-teal-600 text-sm font-medium hover:underline transition-colors"
+        >
           View more &gt;
         </a>
-      </div>
+      </div> */}
     </div>
   );
 };
