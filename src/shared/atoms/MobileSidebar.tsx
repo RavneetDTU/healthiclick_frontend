@@ -4,8 +4,6 @@ import { usePathname } from "next/navigation"
 
 const navItems = [
   { label: "Customers", href: "/feature/allCustomer", group: "ADMIN" },
-  // { label: "All Leads", href: "#", group: "YOU" },
-  // { label: "Tasks", href: "#", group: "YOU" },
   { label: "Dashboard", href: "/feature/dashboard", group: "WELCOME" },
   { label: "Sessions", href: "/feature/session", group: "WELCOME" },
   { label: "Diet Plan", href: "/feature/dietPlan", group: "WELCOME" },
@@ -28,21 +26,25 @@ export const MobileSidebar = () => {
   )
 
   return (
-    <div className="flex flex-col h-full bg-white p-4 overflow-y-auto">
+    <div className="h-full w-full overflow-y-auto">
+
       {Object.entries(groupedNavItems).map(([group, items]) => (
         <div key={group} className="mb-6">
-          <h2 className="text-xs text-gray-600 dark:text-gray-600 mb-2 px-2">{group}</h2>
-          <div className="space-y-1">
+          <h2 className="text-xs uppercase tracking-wider text-gray-500 mb-3 px-4 font-medium">
+            {group}
+          </h2>
+          <div className="space-y-1 px-2">
             {items.map((item) => {
               const isActive = pathname === item.href
-              const baseClasses = "block py-2 px-2 rounded-md font-semibold transition-colors"
-              const activeClasses = "bg-orange-100 text-orange-600"
-              const hoverClasses = "hover:bg-gray-100 hover:text-orange-600"
               return (
                 <Link
                   key={item.label}
                   href={item.href}
-                  className={`${baseClasses} ${isActive ? activeClasses : hoverClasses}`}
+                  className={`block px-4 py-2.5 rounded-lg transition-all ${
+                    isActive
+                      ? 'bg-orange-50 text-orange-600 font-semibold'
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-orange-500'
+                  }`}
                 >
                   {item.label}
                 </Link>

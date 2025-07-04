@@ -53,7 +53,9 @@ export default function ReportCard({ report }: ReportCardProps) {
     if (report.details?.length) {
       content += "Details:\n";
       report.details.forEach((detail) => {
-        content += `- ${detail.name}: ${detail.value} ${detail.unit || ""} (${detail.status})\n`;
+        content += `- ${detail.name}: ${detail.value} ${detail.unit || ""} (${
+          detail.status
+        })\n`;
       });
     }
 
@@ -94,9 +96,17 @@ export default function ReportCard({ report }: ReportCardProps) {
             <span
               className={`
                 px-2 py-1 rounded-full text-xs font-medium
-                ${report.status === "normal" ? "bg-green-100 text-green-700" : ""}
+                ${
+                  report.status === "normal"
+                    ? "bg-green-100 text-green-700"
+                    : ""
+                }
                 ${report.status === "abnormal" ? "bg-red-100 text-red-700" : ""}
-                ${report.status === "pending" ? "bg-yellow-100 text-yellow-700" : ""}
+                ${
+                  report.status === "pending"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : ""
+                }
               `}
             >
               {getStatusText()}
@@ -123,7 +133,9 @@ export default function ReportCard({ report }: ReportCardProps) {
                   >
                     {detail.value}{" "}
                     {detail.unit && (
-                      <span className="text-xs text-gray-400">{detail.unit}</span>
+                      <span className="text-xs text-gray-400">
+                        {detail.unit}
+                      </span>
                     )}
                   </span>
                 </div>
@@ -140,17 +152,19 @@ export default function ReportCard({ report }: ReportCardProps) {
           >
             {isExpanded ? "Hide Details" : "Show Details"}
           </Button>
-          <div className="flex flex-col sm:flex-row gap-2 flex-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
             <Button
-              onClick={() => window.open(`/api/reports/${report.id}/view`, "_blank")}
-              className="flex-1"
+              onClick={() =>
+                window.open(`/api/reports/${report.id}/view`, "_blank")
+              }
+              className="w-full min-w-0" // Added min-w-0 to prevent overflow
             >
               View Report
             </Button>
             <Button
               onClick={() => handleDownload(report)}
               variant="outline"
-              className="flex-1 flex items-center justify-center"
+              className="w-full flex items-center justify-center min-w-0"
             >
               <Download className="h-4 w-4 mr-2" />
               Download

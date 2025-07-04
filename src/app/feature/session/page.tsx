@@ -5,6 +5,7 @@ import { Footer } from "@/shared/atoms/Footer";
 import { InlineWidget } from "react-calendly";
 
 export default function BookSessionPage() {
+  
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       <Header />

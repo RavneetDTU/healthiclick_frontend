@@ -50,14 +50,14 @@ export default function UserProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#fef7f2] p-10 text-center text-lg">
+      <div className="min-h-screen bg-[#f9fafb] p-10 text-center text-lg">
         Loading profile...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#fef7f2] p-4">
+    <div className="min-h-screen bg-[#f9fafb]">
       <ProfilePage />
     </div>
   );
