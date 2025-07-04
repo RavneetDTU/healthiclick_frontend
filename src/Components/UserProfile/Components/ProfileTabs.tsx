@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ProfileDietPlan } from "./ProfileDietPlan";
 import ProfileExercise from "./ProfileExercise";
 import ProfileReports from "./ProfileReports";
+import ProfileSession from "./ProfileSession";
 
 export default function ProfileTabs() {
   // const { user, appointments } = useProfileStore();
@@ -45,6 +46,17 @@ export default function ProfileTabs() {
           >
             Reports
           </button>
+
+          <button
+            onClick={() => setActiveTab("session")}
+            className={`px-4 py-3 text-sm font-medium transition-colors ${
+              activeTab === "session"
+                ? "border-b-2 border-teal-500 text-teal-600"
+                : "text-gray-500 hover:text-teal-500"
+            }`}
+          >
+            Session
+          </button>
         </div>
       </div>
 
@@ -60,6 +72,12 @@ export default function ProfileTabs() {
         {activeTab === "reports" && (
           <div>
             <ProfileReports />
+          </div>
+        )}
+
+        {activeTab === "session" && (
+          <div>
+            <ProfileSession />
           </div>
         )}
 

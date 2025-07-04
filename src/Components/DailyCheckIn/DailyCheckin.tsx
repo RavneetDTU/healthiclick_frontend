@@ -10,15 +10,14 @@ const DailyCheckIn = () => {
   const [date, setDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
-  const [steps, setSteps] = useState<number>(0);
-  const [weight, setWeight] = useState<number>(0);
-  const [calories, setCalories] = useState<number>(0);
+  const [waterIntake, setWaterIntake] = useState<number>(0);
+  const [physicalActivities, setPhysicalActivities] = useState<string>("");
+  const [extraFood, setExtraFood] = useState<string>("");
   const [sleepHours, setSleepHours] = useState<number>(0);
   const [weekday, setWeekday] = useState<string>("");
   const [isEditingPastDate, setIsEditingPastDate] = useState<boolean>(false);
 
   const { user } = useProfileStore();
-
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error";
@@ -51,7 +50,7 @@ const DailyCheckIn = () => {
     const token = localStorage.getItem("token");
 
     if (!user?.userid) {
-      console.warn("⏳ missing userId ");
+      console.warn("⏳ missing userId");
       return;
     }
 
@@ -62,9 +61,9 @@ const DailyCheckIn = () => {
 
     const payload = {
       date: new Date(date).toISOString(),
-      steps,
-      weight,
-      calories,
+      water_intake: waterIntake,
+      physical_activities: physicalActivities,
+      extra_food: extraFood,
       sleep_hours: sleepHours,
     };
 
@@ -81,22 +80,24 @@ const DailyCheckIn = () => {
         }
       );
 
-      const data = await response.json();
-      console.log("Response data:", data);
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || "Something went wrong");
       }
 
-      setToast({ message: "Data saved successfully", type: "success" });
+      setToast({
+        message: "Daily check-in saved successfully",
+        type: "success",
+      });
 
-      setSteps(0);
-      setWeight(0);
-      setCalories(0);
+      // Reset form
+      setWaterIntake(0);
+      setPhysicalActivities("");
+      setExtraFood("");
       setSleepHours(0);
     } catch (error: unknown) {
       console.error("Error saving data:", error);
+      setToast({ message: "Failed to save daily check-in", type: "error" });
     }
   };
 
@@ -113,7 +114,7 @@ const DailyCheckIn = () => {
             <div className="p-6">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
                 <h2 className="text-xl font-semibold text-teal-700 mb-2 sm:mb-0">
-                  Daily Check-In
+                  Daily Wellness Log
                 </h2>
                 <div className="text-sm text-gray-600">
                   <span className="font-medium">{weekday}</span>,{" "}
@@ -133,7 +134,7 @@ const DailyCheckIn = () => {
                     htmlFor="date"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    Select Date
+                    Log Date
                   </label>
                   <input
                     type="date"
@@ -148,78 +149,61 @@ const DailyCheckIn = () => {
                 <div className="space-y-4">
                   <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
                     <label
-                      htmlFor="steps"
+                      htmlFor="water"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
-                      Step Count
+                      Water Intake
                     </label>
                     <div className="relative">
                       <input
                         type="number"
-                        id="steps"
-                        value={steps || ""}
+                        id="water"
+                        value={waterIntake || ""}
                         onChange={(e) =>
-                          setSteps(parseInt(e.target.value) || 0)
+                          setWaterIntake(parseInt(e.target.value) || 0)
                         }
                         min="0"
                         className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-200"
-                        placeholder="Enter steps"
+                        placeholder="Enter litres of water"
                       />
                       <span className="absolute right-3 top-2 text-gray-500 text-sm">
-                        steps
+                        litre
                       </span>
                     </div>
                   </div>
 
                   <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
                     <label
-                      htmlFor="weight"
+                      htmlFor="activities"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
-                      Weight
+                      Physical Activities
                     </label>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        id="weight"
-                        value={weight || ""}
-                        onChange={(e) =>
-                          setWeight(parseFloat(e.target.value) || 0)
-                        }
-                        min="0"
-                        step="0.1"
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-200"
-                        placeholder="Enter weight"
-                      />
-                      <span className="absolute right-3 top-2 text-gray-500 text-sm">
-                        kg
-                      </span>
-                    </div>
+                    <input
+                      type="text"
+                      id="activities"
+                      value={physicalActivities}
+                      onChange={(e) => setPhysicalActivities(e.target.value)}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-200"
+                      placeholder="E.g., Running, Yoga, Swimming"
+                    />
                   </div>
 
                   <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
                     <label
-                      htmlFor="calories"
+                      htmlFor="extraFood"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
-                      Calories
+                      Additional Food Intake
                     </label>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        id="calories"
-                        value={calories || ""}
-                        onChange={(e) =>
-                          setCalories(parseInt(e.target.value) || 0)
-                        }
-                        min="0"
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-200"
-                        placeholder="Enter calories"
-                      />
-                      <span className="absolute right-3 top-2 text-gray-500 text-sm">
-                        kcal
-                      </span>
-                    </div>
+                    <input
+                      type="text"
+                      id="extraFood"
+                      value={extraFood}
+                      onChange={(e) => setExtraFood(e.target.value)}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-200"
+                      placeholder="E.g., Dessert, Snacks"
+                    />
                   </div>
 
                   <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
@@ -255,7 +239,7 @@ const DailyCheckIn = () => {
                     type="submit"
                     className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-teal-500 hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-300 transition-colors duration-200"
                   >
-                    Save Daily Log
+                    Save Wellness Log
                   </button>
                 </div>
               </form>
