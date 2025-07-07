@@ -1,8 +1,9 @@
 "use client"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
 
-const navItems = [
+const allNavItems = [
   { label: "Customers", href: "/feature/allCustomer", group: "ADMIN" },
   { label: "Dashboard", href: "/feature/dashboard", group: "WELCOME" },
   { label: "Sessions", href: "/feature/session", group: "WELCOME" },
@@ -13,6 +14,19 @@ const navItems = [
 
 export const MobileSidebar = () => {
   const pathname = usePathname()
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const adminFlag = localStorage.getItem("is_admin");
+      setIsAdmin(adminFlag === "true");
+    }
+  }, []);
+
+  // Filter navItems based on admin status
+  const navItems = allNavItems.filter(item => 
+    item.group !== "ADMIN" || isAdmin
+  );
 
   const groupedNavItems = navItems.reduce(
     (acc, item) => {
@@ -22,12 +36,11 @@ export const MobileSidebar = () => {
       acc[item.group].push(item)
       return acc
     },
-    {} as Record<string, typeof navItems>,
+    {} as Record<string, typeof allNavItems>,
   )
 
   return (
     <div className="h-full w-full overflow-y-auto">
-
       {Object.entries(groupedNavItems).map(([group, items]) => (
         <div key={group} className="mb-6">
           <h2 className="text-xs uppercase tracking-wider text-gray-500 mb-3 px-4 font-medium">

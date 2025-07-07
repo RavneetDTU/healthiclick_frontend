@@ -10,6 +10,11 @@ import { FaCheck } from "react-icons/fa";
 import { Footer } from "@/shared/atoms/Footer";
 import { Toast } from "../ui/Toast";
 import Link from "next/link";
+import {
+  fetchExercisePlan,
+  fetchExercisePdfAvailability,
+  fetchExerciseLastUpdate,
+} from "@/lib/api";
 
 interface ExerciseElement {
   exercise_name: string;
@@ -62,43 +67,27 @@ export const ExercisePage = () => {
 
   useEffect(() => {
     const fetchExercises = async (): Promise<void> => {
-      const token = localStorage.getItem("token");
       const weekdayLower = weekDay?.toLowerCase();
-
-      if (!user?.userid || !weekdayLower) {
-        console.warn("⏳ Skipping fetch: missing userId or weekday");
+      const token = localStorage.getItem("token");
+  
+      if (!user?.userid || !weekdayLower || !token) {
+        console.warn("⏳ Skipping fetch: missing userId, weekday, or token");
         return;
       }
-
-      if (!token) {
-        setToast({ message: "User not authenticated", type: "error" });
-        return;
-      }
-
-      const apiUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/exercise-plan/${user.userid}?weekday=${weekdayLower}`;
-
+  
       try {
-        const response = await fetch(apiUrl, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Error ${response.status}: ${errorText}`);
-        }
-
-        const data: ExerciseSection[] = await response.json();
-
+        const data: ExerciseSection[] = await fetchExercisePlan(
+          user.userid,
+          weekdayLower,
+        );
+  
         if (data.length === 0) {
           console.warn("⚠️ API returned empty list, skipping state update");
           return;
         }
-
+  
         const structured: Record<string, StructuredExercise[]> = {};
-
+  
         data.forEach((section, sectionIndex) => {
           const category = section.name || `Session ${sectionIndex + 1}`;
           const entries: StructuredExercise[] = section.elements.map(
@@ -112,75 +101,60 @@ export const ExercisePage = () => {
               category,
             })
           );
-
+  
           if (!structured[category]) {
             structured[category] = entries;
           } else {
             structured[category] = [...structured[category], ...entries];
           }
         });
-
+  
         setStructuredExercises(structured);
       } catch (error) {
         const message =
-          error instanceof Error ? error.message : "Unknown error";
+          error instanceof Error
+            ? error.message.includes("403")
+              ? "You are not authorized to access this exercise plan."
+              : error.message
+            : "Unknown error";
         console.error("❌ Fetch failed:", message);
         setToast({ message, type: "error" });
       }
     };
-
+  
     fetchExercises();
   }, [user?.userid, weekDay]);
+  
 
   useEffect(() => {
     const checkPdfAvailability = async () => {
-      const token = localStorage.getItem("token");
-      if (!user?.userid || !token) return;
+      if (!user?.userid) return;
 
       try {
-        // Check if PDF exists
-        const pdfRes = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/exercise-plan-pdf/${user.userid}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        await fetchExercisePdfAvailability(user?.userid);
+        setPdfAvailable(true);
+      } catch (err) {
+        console.warn("❌ PDF not available" , err);
+        setPdfAvailable(false);
+      }
 
-        console.log("PDF check status:", pdfRes.status);
-        setPdfAvailable(pdfRes.ok || pdfRes.status === 304);
+      try {
+        const planData = await fetchExerciseLastUpdate(user?.userid);
+        const uploadedAt = planData?.[0]?.uploaded_at;
 
-        // Now fetch uploaded_at from exercise plan
-        const planRes = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/exercise-plans/${user.userid}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (planRes.ok) {
-          const planData = await planRes.json();
-          const uploadedAt = planData?.[0]?.uploaded_at;
-
-          if (uploadedAt) {
-            const dt = new Date(uploadedAt);
-            const formatted = dt.toLocaleString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            });
-            setLastUpdated(formatted);
-          }
+        if (uploadedAt) {
+          const dt = new Date(uploadedAt);
+          const formatted = dt.toLocaleString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          setLastUpdated(formatted);
         }
       } catch (err) {
-        console.error("Error checking PDF or fetching last update:", err);
-        setPdfAvailable(false);
+        console.error("Error fetching last update:", err);
       }
     };
 
@@ -219,8 +193,20 @@ export const ExercisePage = () => {
     setSelectedExercise(null);
   };
 
+
+  // If user is not logged in, show a message
+
+  if (!user?.userid) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-600">Please log in to view your exercise plan.</p>
+      </div>
+    );
+  }
+
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#fef7f2]">
+    <div className="min-h-screen flex flex-col bg-[#f9fafb]">
       <Header />
       <div className="flex flex-1 flex-col lg:flex-row">
         <div className="hidden md:block">

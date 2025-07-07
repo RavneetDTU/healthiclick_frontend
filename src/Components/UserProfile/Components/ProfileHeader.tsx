@@ -18,7 +18,7 @@ export default function ProfileHeader() {
   const [hasMeals, setHasMeals] = useState(false);
   const [exerciseCount, setExerciseCount] = useState(0);
   const [mealCount, setMealCount] = useState(0);
-  const [weekDay] = useState<string>("Monday"); 
+  const [weekDay] = useState<string>("Monday");
     const [, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
 
@@ -57,7 +57,7 @@ export default function ProfileHeader() {
     const fetchExercises = async () => {
       const token = localStorage.getItem("token");
       const weekdayLower = weekDay?.toLowerCase();
-  
+    
       if (!user?.userid || !weekdayLower) return;
       if (!token) {
         setToast({ message: "User not authenticated", type: "error" });
@@ -99,11 +99,13 @@ export default function ProfileHeader() {
   useEffect(() => {
     const fetchDietPlan = async () => {
       const token = localStorage.getItem("token");
+      const weekdayLower = weekDay?.toLowerCase();
+
       if (!user?.userid || !weekDay || !token) return;
   
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/diet-plan/${user.userid}?weekday=${weekDay.toLowerCase()}`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/diet-plan/${user.userid}?weekday=${weekdayLower}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
