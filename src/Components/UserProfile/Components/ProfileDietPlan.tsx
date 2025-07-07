@@ -166,7 +166,7 @@ export const ProfileDietPlan = () => {
 
           <button onClick={openEditPopup}>
             <span className="ml-2 text-sm text-blue-600 hover:underline dark:text-blue-400">
-              Edit
+              Add/Edit
             </span>
           </button>
         </div>

@@ -201,7 +201,7 @@ function ProfileExercise() {
 
           <button onClick={openEditPopup}>
             <span className="ml-2 text-sm text-teal-600 hover:underline">
-              Edit
+              Add/Edit
             </span>
           </button>
         </div>
