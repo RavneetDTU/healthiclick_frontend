@@ -22,7 +22,10 @@ interface ExerciseSection {
 export default function AddExerciseDialog() {
   const { dialogOpen, setDialogOpen, user } = useProfileStore();
   const dialogRef = useRef<HTMLDivElement>(null);
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const [weekday, setWeekday] = useState<string>("monday");
   const [sections, setSections] = useState<ExerciseSection[]>([
@@ -37,7 +40,10 @@ export default function AddExerciseDialog() {
     },
   ]);
 
-  const showToast = (message: string, type: "success" | "error" = "success") => {
+  const showToast = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
     setToast({ message, type });
   };
 
@@ -71,12 +77,17 @@ export default function AddExerciseDialog() {
         sectionName: `Section ${sections.length + 1}`,
         newSectionName: `Section ${sections.length + 1}`,
         time: "",
-        exercises: [{ exercise_name: "", duration: "", video_link: "", comment: "" }],
+        exercises: [
+          { exercise_name: "", duration: "", video_link: "", comment: "" },
+        ],
       },
     ]);
   };
 
-  const handleSectionNameInputChange = (sectionIndex: number, value: string) => {
+  const handleSectionNameInputChange = (
+    sectionIndex: number,
+    value: string
+  ) => {
     const updated = [...sections];
     updated[sectionIndex].newSectionName = value;
     setSections(updated);
@@ -85,7 +96,12 @@ export default function AddExerciseDialog() {
   const handleDone = async () => {
     for (const section of sections) {
       for (const ex of section.exercises) {
-        if (!ex.exercise_name || !ex.duration || !ex.video_link || !ex.comment) {
+        if (
+          !ex.exercise_name ||
+          !ex.duration ||
+          !ex.video_link ||
+          !ex.comment
+        ) {
           showToast("Please fill all fields", "error");
           return;
         }
@@ -125,6 +141,13 @@ export default function AddExerciseDialog() {
 
       showToast("Exercises saved", "success");
       setDialogOpen("exercise", false);
+
+      // Reload the page after a short delay to show the toast message
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+
+      
     } catch (error) {
       let message = "Something went wrong";
       if (error instanceof Error) {
@@ -136,7 +159,10 @@ export default function AddExerciseDialog() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+      if (
+        dialogRef.current &&
+        !dialogRef.current.contains(event.target as Node)
+      ) {
         setDialogOpen("exercise", false);
       }
     };
@@ -157,7 +183,11 @@ export default function AddExerciseDialog() {
   return (
     <>
       {toast && (
-        <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
 
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
@@ -165,7 +195,9 @@ export default function AddExerciseDialog() {
           ref={dialogRef}
           className="bg-white rounded-xl shadow-lg w-full md:max-w-[90%] max-h-screen overflow-y-auto"
         >
-          <h2 className="text-xl font-semibold text-center mt-5 text-teal-700">Add Exercises</h2>
+          <h2 className="text-xl font-semibold text-center mt-5 text-teal-700">
+            Add Exercises
+          </h2>
 
           <div className="text-center mt-2 mb-4">
             <select
@@ -173,13 +205,19 @@ export default function AddExerciseDialog() {
               onChange={(e) => setWeekday(e.target.value)}
               className="w-40 p-2 border rounded text-sm"
             >
-              {["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].map(
-                (day) => (
-                  <option key={day} value={day}>
-                    {day.charAt(0).toUpperCase() + day.slice(1)}
-                  </option>
-                )
-              )}
+              {[
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday",
+              ].map((day) => (
+                <option key={day} value={day}>
+                  {day.charAt(0).toUpperCase() + day.slice(1)}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -190,12 +228,16 @@ export default function AddExerciseDialog() {
                   <input
                     type="text"
                     value={section.newSectionName}
-                    onChange={(e) => handleSectionNameInputChange(sectionIndex, e.target.value)}
+                    onChange={(e) =>
+                      handleSectionNameInputChange(sectionIndex, e.target.value)
+                    }
                     className="border px-3 py-2 rounded text-sm w-full md:w-1/2"
                   />
 
                   <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium text-gray-600">Time:</label>
+                    <label className="text-sm font-medium text-gray-600">
+                      Time:
+                    </label>
                     <input
                       type="time"
                       value={section.time}
@@ -217,7 +259,12 @@ export default function AddExerciseDialog() {
                         placeholder="Exercise name"
                         value={ex.exercise_name}
                         onChange={(e) =>
-                          handleInputChange(sectionIndex, exerciseIndex, "exercise_name", e.target.value)
+                          handleInputChange(
+                            sectionIndex,
+                            exerciseIndex,
+                            "exercise_name",
+                            e.target.value
+                          )
                         }
                         className="w-40 md:w-64 p-2 border rounded"
                       />
@@ -226,7 +273,12 @@ export default function AddExerciseDialog() {
                         placeholder="Duration"
                         value={ex.duration}
                         onChange={(e) =>
-                          handleInputChange(sectionIndex, exerciseIndex, "duration", e.target.value)
+                          handleInputChange(
+                            sectionIndex,
+                            exerciseIndex,
+                            "duration",
+                            e.target.value
+                          )
                         }
                         className="w-36 p-2 border rounded"
                       />
@@ -235,7 +287,12 @@ export default function AddExerciseDialog() {
                         placeholder="Video Link"
                         value={ex.video_link}
                         onChange={(e) =>
-                          handleInputChange(sectionIndex, exerciseIndex, "video_link", e.target.value)
+                          handleInputChange(
+                            sectionIndex,
+                            exerciseIndex,
+                            "video_link",
+                            e.target.value
+                          )
                         }
                         className="flex-1 p-2 border rounded"
                       />
@@ -244,12 +301,15 @@ export default function AddExerciseDialog() {
                         placeholder="Comment"
                         value={ex.comment}
                         onChange={(e) =>
-                          handleInputChange(sectionIndex, exerciseIndex, "comment", e.target.value)
+                          handleInputChange(
+                            sectionIndex,
+                            exerciseIndex,
+                            "comment",
+                            e.target.value
+                          )
                         }
                         className="flex-1 p-2 border rounded"
                       />
-
-                      
                     </div>
                   ))}
                 </div>

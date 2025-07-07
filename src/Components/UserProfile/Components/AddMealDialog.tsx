@@ -78,7 +78,10 @@ export default function AddMealDialog() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+      if (
+        dialogRef.current &&
+        !dialogRef.current.contains(event.target as Node)
+      ) {
         setDialogOpen("mealSeprate", false);
       }
     };
@@ -99,7 +102,7 @@ export default function AddMealDialog() {
     if (!time24 || !time24.includes(":")) return "12:00 AM";
     const [h, m] = time24.split(":").map(Number);
     const period = h >= 12 ? "PM" : "AM";
-    const hour = ((h + 11) % 12 + 1).toString().padStart(2, "0");
+    const hour = (((h + 11) % 12) + 1).toString().padStart(2, "0");
     return `${hour}:${m.toString().padStart(2, "0")} ${period}`;
   };
 
@@ -107,7 +110,10 @@ export default function AddMealDialog() {
     const { userid } = useProfileStore.getState().user;
     const token = localStorage.getItem("token");
     if (!userid || !token) {
-      setToast({ message: "User ID not found or unauthenticated", type: "error" });
+      setToast({
+        message: "User ID not found or unauthenticated",
+        type: "error",
+      });
       return;
     }
 
@@ -139,6 +145,12 @@ export default function AddMealDialog() {
 
       setToast({ message: "Meals added successfully", type: "success" });
       setDialogOpen("mealSeprate", false);
+
+      // Reload the page after a short delay to show the toast message
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+      
     } catch (error) {
       console.error("Submit error:", error);
       setToast({ message: "Something went wrong", type: "error" });
@@ -147,11 +159,22 @@ export default function AddMealDialog() {
 
   return (
     <>
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
 
       <div className="w-full fixed inset-0 bg-black/50 flex justify-center items-center z-50 overflow-y-auto p-4">
-        <div ref={dialogRef} className="bg-white rounded-xl shadow-lg w-full max-w-[90%] max-h-screen overflow-y-auto">
-          <h3 className="text-xl font-semibold text-center mt-5 text-teal-700">Add Meals</h3>
+        <div
+          ref={dialogRef}
+          className="bg-white rounded-xl shadow-lg w-full max-w-[90%] max-h-screen overflow-y-auto"
+        >
+          <h3 className="text-xl font-semibold text-center mt-5 text-teal-700">
+            Add Meals
+          </h3>
 
           <div className="text-center mt-2 mb-4">
             <select
@@ -159,7 +182,15 @@ export default function AddMealDialog() {
               onChange={(e) => setWeekday(e.target.value)}
               className="w-40 p-2 border rounded text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-400"
             >
-              {["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].map((day) => (
+              {[
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday",
+              ].map((day) => (
                 <option key={day} value={day}>
                   {day.charAt(0).toUpperCase() + day.slice(1)}
                 </option>
@@ -183,7 +214,9 @@ export default function AddMealDialog() {
                   />
 
                   <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium text-gray-600">Meal Time:</label>
+                    <label className="text-sm font-medium text-gray-600">
+                      Meal Time:
+                    </label>
                     <input
                       type="time"
                       value={section.mealTime}
@@ -204,21 +237,42 @@ export default function AddMealDialog() {
                         type="text"
                         placeholder="Meal name"
                         value={input.meal_name}
-                        onChange={(e) => handleInputChange(sectionIndex, idx, "meal_name", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(
+                            sectionIndex,
+                            idx,
+                            "meal_name",
+                            e.target.value
+                          )
+                        }
                         className="w-44 md:w-64 p-2 border rounded bg-gray-50 focus:ring-2 focus:ring-teal-400"
                       />
                       <input
                         type="text"
                         placeholder="Quantity"
                         value={input.quantity}
-                        onChange={(e) => handleInputChange(sectionIndex, idx, "quantity", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(
+                            sectionIndex,
+                            idx,
+                            "quantity",
+                            e.target.value
+                          )
+                        }
                         className="w-36 md:w-52 p-2 border rounded bg-gray-50 focus:ring-2 focus:ring-teal-400"
                       />
                       <input
                         type="text"
                         placeholder="Recipe"
                         value={input.recipe}
-                        onChange={(e) => handleInputChange(sectionIndex, idx, "recipe", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(
+                            sectionIndex,
+                            idx,
+                            "recipe",
+                            e.target.value
+                          )
+                        }
                         className="flex-1 p-2 border rounded bg-gray-50 focus:ring-2 focus:ring-teal-400"
                       />
                     </div>

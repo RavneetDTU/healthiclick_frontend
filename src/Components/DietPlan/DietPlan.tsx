@@ -11,6 +11,11 @@ import { Footer } from "@/shared/atoms/Footer";
 import { Toast } from "../ui/Toast";
 import { DietSection, MealItem, weekDays } from "./store/DietStore";
 import Link from "next/link";
+import {
+  fetchDietPlan,
+  fetchDietPdfAvailability,
+  fetchDietLastUpdated,
+} from "@/lib/api";
 
 export const DietPlan = () => {
   const { weekDay, meals, setWeekDay, setMeals } = useDietPlanStore();
@@ -28,28 +33,12 @@ export const DietPlan = () => {
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchDietPlan = async () => {
-      const token = localStorage.getItem("token");
-      if (!user?.userid || !weekDay || !token) return;
-
+    const fetchPlan = async () => {
+      if (!user?.userid || !weekDay) return;
+  
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/diet-plan/${
-            user.userid
-          }?weekday=${weekDay.toLowerCase()}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch diet plan");
-        }
-
-        const data: DietSection[] = await res.json();
-
+        const data: DietSection[] = await fetchDietPlan(user.userid, weekDay.toLowerCase());
+  
         const structured = data.reduce(
           (
             acc: Record<string, MealItem[]>,
@@ -70,7 +59,7 @@ export const DietPlan = () => {
           },
           {}
         );
-
+  
         setMeals(structured);
         setHasMeals(Object.keys(structured).length > 0);
       } catch (error: unknown) {
@@ -85,63 +74,41 @@ export const DietPlan = () => {
         }
       }
     };
-
-    fetchDietPlan();
+  
+    fetchPlan();
   }, [weekDay, user?.userid, setMeals]);
+  
 
   useEffect(() => {
     const checkPdfAvailability = async () => {
-      const token = localStorage.getItem("token");
-      if (!user?.userid || !token) return;
-
+      if (!user?.userid) return;
+  
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/diet-plan-pdf/${user.userid}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        console.log("PDF check status:", res.status);
-        setPdfAvailable(res.ok || res.status === 304);
-
-        // Now fetch uploaded_at from exercise plan
-        const planRes = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/diet-plans/${user.userid}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (planRes.ok) {
-          const planData = await planRes.json();
-          const uploadedAt = planData?.[0]?.uploaded_at;
-
-          if (uploadedAt) {
-            const dt = new Date(uploadedAt);
-            const formatted = dt.toLocaleString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            });
-            setLastUpdated(formatted);
-          }
+        await fetchDietPdfAvailability(user.userid);
+        setPdfAvailable(true);
+  
+        const planData = await fetchDietLastUpdated(user.userid);
+        const uploadedAt = planData?.[0]?.uploaded_at;
+  
+        if (uploadedAt) {
+          const dt = new Date(uploadedAt);
+          const formatted = dt.toLocaleString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          setLastUpdated(formatted);
         }
       } catch (err) {
         console.error("PDF check failed:", err);
         setPdfAvailable(false);
       }
     };
-
+  
     checkPdfAvailability();
-  }, [user?.userid]);
+  }, [user?.userid]);  
 
   const handleTrackMeal = async (
     meal_id: number,
