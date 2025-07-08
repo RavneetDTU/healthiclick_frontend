@@ -123,7 +123,7 @@ export default function AddExerciseDialog() {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `https://xyz.healthiclick.com/admin/exercises?user_id=${user.userid}&weekday=${weekday}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/exercises?user_id=${user.userid}&weekday=${weekday}`,
         {
           method: "POST",
           headers: {
@@ -146,8 +146,6 @@ export default function AddExerciseDialog() {
       setTimeout(() => {
         window.location.reload();
       }, 1000);
-
-      
     } catch (error) {
       let message = "Something went wrong";
       if (error instanceof Error) {
@@ -177,6 +175,7 @@ export default function AddExerciseDialog() {
       document.body.style.overflow = "";
     };
   }, [dialogOpen.exercise, setDialogOpen]);
+
 
   if (!dialogOpen.exercise) return null;
 

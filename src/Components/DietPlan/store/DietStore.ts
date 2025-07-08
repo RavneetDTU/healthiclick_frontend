@@ -33,10 +33,10 @@ export const weekDays = [
 
 export interface DietPlanState {
   weekDay: string;
-  meals: Record<string, MealItem[]>; // Meals for one selected day
+  meals: Record<string, MealItem[]>;
   setWeekDay: (day: string) => void;
   setMeals: (data: Record<string, MealItem[]>) => void;
-  loadMockMeals: () => void; // ✅ move useEffect logic here
+  loadMockMeals: () => void;
 }
 
 export const useDietPlanStore = create<DietPlanState>((set) => ({
@@ -45,21 +45,5 @@ export const useDietPlanStore = create<DietPlanState>((set) => ({
   setWeekDay: (day) => set({ weekDay: day }),
   setMeals: (data) => set({ meals: data }),
   loadMockMeals: () =>
-    set({
-      meals: {
-        'Meal 1': [
-          { id:1,  meal_name: 'fruit Salad', quantity: '100g' , recipe: 'Mix of seasonal fruits'},
-          { id:2 , meal_name: 'pineapple', quantity: '1' , recipe: 'Fresh pineapple slices'},
-          {id:3,  meal_name: 'fruit Salad', quantity: '100g', recipe: 'Mix of seasonal fruits'},
-        ],
-        'Meal 2': [
-          { id:1 , meal_name: 'pineapple', quantity: '50g', recipe: 'Fresh pineapple slices'},
-          { id:2, meal_name: 'chicken', quantity: '150g', recipe: 'Grilled chicken breast' },
-        ],
-        'Meal 3': [
-          {id:1,  meal_name: 'mix veg', quantity: '50g', recipe: 'Mixed vegetables stir-fry'},
-          {id:2 ,  meal_name: 'vegetable and roti', quantity: '200g', recipe: 'Mixed vegetables with roti' },
-        ],
-      },
-    }),
+    set({}),
 }));

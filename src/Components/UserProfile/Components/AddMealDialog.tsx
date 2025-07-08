@@ -130,7 +130,7 @@ export default function AddMealDialog() {
 
     try {
       const res = await fetch(
-        `https://xyz.healthiclick.com/admin/meals?user_id=${userid}&weekday=${weekday}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/meals?user_id=${userid}&weekday=${weekday}`,
         {
           method: "POST",
           headers: {

@@ -4,25 +4,47 @@ import React, { useEffect, useState } from "react";
 import { GraphCard } from "./GraphCard";
 import axios from "axios";
 
+interface DailyCheckinData {
+  date: string;
+  steps: number;
+  weight: number;
+  calories: number;
+  sleep_hours: number;
+  id: number;
+  user_id: number;
+}
+
 interface ChartItem {
   label: string;
   values: number[];
+  dates?: string[];
 }
 
 export const WeeklyGraphSection: React.FC = () => {
   const [chartData, setChartData] = useState<ChartItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchChartData = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.error("No access token found.");
+        setError("No access token found. Please log in.");
+        setLoading(false);
         return;
       }
 
       try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/data`,
+        // Calculate date range (last 7 days)
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(endDate.getDate() - 7);
+        
+        const formattedStartDate = startDate.toISOString().split('T')[0];
+        const formattedEndDate = endDate.toISOString().split('T')[0];
+
+        const response = await axios.get<DailyCheckinData[]>(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/daily-checkin?start_date=${formattedStartDate}&end_date=${formattedEndDate}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -30,23 +52,79 @@ export const WeeklyGraphSection: React.FC = () => {
           }
         );
 
-        const charts = response.data.charts;
+        if (response.data.length === 0) {
+          // setError("No chart data available for the selected period.");
+          setLoading(false);
+          return;
+        }
+
+        // Sort data by date
+        const sortedData = [...response.data].sort((a, b) => 
+          new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+
+        // Extract dates for labels
+        const dates = sortedData.map(item => 
+          new Date(item.date).toLocaleDateString('en-US', { weekday: 'short' })
+        );
 
         const formattedCharts: ChartItem[] = [
-          { label: "Step Counter", values: charts.step_counter },
-          { label: "Sleep Counter", values: charts.sleep_counter },
-          { label: "Calorie Counter", values: charts.calorie_counter },
-          { label: "Weight Counter", values: charts.weight_counter },
+          { 
+            label: "Step Counter", 
+            values: sortedData.map(item => item.steps),
+            dates
+          },
+          { 
+            label: "Sleep Counter", 
+            values: sortedData.map(item => item.sleep_hours),
+            dates
+          },
+          { 
+            label: "Calorie Counter", 
+            values: sortedData.map(item => item.calories),
+            dates
+          },
+          { 
+            label: "Weight Counter", 
+            values: sortedData.map(item => item.weight),
+            dates
+          },
         ];
 
         setChartData(formattedCharts);
+        setLoading(false);
       } catch (err) {
         console.error("Failed to fetch chart data", err);
+        setError("Failed to load chart data. Please try again later.");
+        setLoading(false);
       }
     };
 
     fetchChartData();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {Array(4).fill(0).map((_, index) => (
+              <div key={index} className="h-64 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -61,18 +139,14 @@ export const WeeklyGraphSection: React.FC = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         {chartData.map((chart, idx) => (
-          <GraphCard key={idx} label={chart.label} values={chart.values} />
+          <GraphCard 
+            key={idx} 
+            label={chart.label} 
+            values={chart.values} 
+            dates={chart.dates}
+          />
         ))}
       </div>
-
-      {/* <div className="mt-6 text-right">
-        <a
-          href="#"
-          className="text-teal-600 text-sm font-medium hover:underline transition-colors"
-        >
-          View more &gt;
-        </a>
-      </div> */}
     </div>
   );
 };
