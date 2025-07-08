@@ -15,6 +15,7 @@ import {
 interface GraphCardProps {
   label: string;
   values: number[];
+  dates?: string[];
 }
 
 const months = ["Monday", "Tuesday", "Wednesday", "Thrusday", "Friday", "Saturday", "Sunday"];
