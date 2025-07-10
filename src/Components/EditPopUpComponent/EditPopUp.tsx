@@ -166,7 +166,7 @@ const EditPopup = <T extends Record<string, unknown>>({
                   type="text"
                   value={section.name}
                   onChange={e => handleSectionNameChange(section.id, e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-300"
                 />
               </div>
               
@@ -195,7 +195,7 @@ const EditPopup = <T extends Record<string, unknown>>({
                         onChange={e =>
                           handleChange(section.id, index, key, e.target.value)
                         }
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-300"
                       />
                     </div>
                   ))}
@@ -239,7 +239,7 @@ const EditPopup = <T extends Record<string, unknown>>({
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
+            className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition"
           >
             Save
           </button>

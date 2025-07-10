@@ -176,6 +176,27 @@ export default function AddExerciseDialog() {
     };
   }, [dialogOpen.exercise, setDialogOpen]);
 
+  const initialSectionCount = useRef(sections.length); // Track initial section count
+
+  // Reset sections when weekday changes
+  useEffect(() => {
+    if (!dialogOpen.exercise) return;
+    
+    // Create empty sections preserving the structure
+    const newSections = Array(initialSectionCount.current)
+      .fill(null)
+      .map((_, i) => ({
+        id: Date.now() + i, // New unique ID
+        sectionName: `Section ${i + 1}`,
+        newSectionName: `Section ${i + 1}`,
+        time: "",
+        exercises: [
+          { exercise_name: "", duration: "", video_link: "", comment: "" },
+        ],
+      }));
+
+    setSections(newSections);
+  }, [weekday, dialogOpen.exercise]); 
 
   if (!dialogOpen.exercise) return null;
 

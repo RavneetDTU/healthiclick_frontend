@@ -141,7 +141,7 @@ export default function ActivityCharts() {
               onClick={() => setTimeframe("weekly")}
               className={`px-2 sm:px-3 py-1 text-xs sm:text-sm transition-colors ${
                 timeframe === "weekly"
-                  ? "bg-orange-300 text-white"
+                  ? "bg-teal-300 text-white"
                   : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
               }`}
             >
@@ -151,7 +151,7 @@ export default function ActivityCharts() {
               onClick={() => setTimeframe("monthly")}
               className={`px-2 sm:px-3 py-1 text-xs sm:text-sm transition-colors ${
                 timeframe === "monthly"
-                  ? "bg-orange-300 text-white"
+                  ? "bg-teal-300 text-white"
                   : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
               }`}
             >

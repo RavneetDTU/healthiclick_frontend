@@ -199,7 +199,7 @@ export const ProfileDietPlan = () => {
                     {items.map((item) => (
                       <tr
                         key={item.id}
-                        className="hover:bg-orange-100 dark:hover:bg-gray-700"
+                        className="hover:bg-teal-100 dark:hover:bg-gray-700"
                       >
                         <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 capitalize">
                           {item.meal_name}

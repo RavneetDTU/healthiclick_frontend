@@ -55,8 +55,8 @@ export const MobileSidebar = () => {
                   href={item.href}
                   className={`block px-4 py-2.5 rounded-lg transition-all ${
                     isActive
-                      ? 'bg-orange-50 text-orange-600 font-semibold'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-orange-500'
+                      ? 'bg-teal-50 text-teal-600 font-semibold'
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-teal-500'
                   }`}
                 >
                   {item.label}

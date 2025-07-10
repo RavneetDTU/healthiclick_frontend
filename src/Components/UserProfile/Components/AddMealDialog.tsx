@@ -96,6 +96,26 @@ export default function AddMealDialog() {
     };
   }, [dialogOpen.mealSeprate, setDialogOpen]);
 
+  const createInitialSections = () => {
+    return ["Breakfast", "Lunch", "Dinner"].map((name, idx) => ({
+      id: Date.now() + idx,
+      sectionName: name,
+      tempSectionName: name,
+      mealTime: "",
+      meals: [{ meal_name: "", quantity: "", recipe: "" }],
+    }));
+  };
+  
+  const isInitialRender = useRef(true);
+  
+  useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
+      setSections(createInitialSections());
+  }, [weekday]);
+
   if (!dialogOpen.mealSeprate) return null;
 
   const formatTimeTo12H = (time24: string) => {

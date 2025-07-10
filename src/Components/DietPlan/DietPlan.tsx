@@ -167,7 +167,7 @@ export const DietPlan = () => {
           </div>
 
           {!hasMeals && (
-            <div className="bg-yellow-100 border border-yellow-300 text-yellow-800 p-4 rounded mb-6">
+            <div className="bg-teal-100 border border-teal-300 text-gray-600 p-4 rounded mb-6">
               Your dietician hasn`t uploaded or added your diet plan yet.
             </div>
           )}
@@ -175,7 +175,7 @@ export const DietPlan = () => {
           {pdfAvailable && (
             <div className="mb-6">
               <Link href="/feature/DietPlanPdf" target="_blank">
-                <button className="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
+                <button className="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700">
                   View Uploaded Diet Plan
                 </button>
               </Link>
@@ -218,7 +218,7 @@ export const DietPlan = () => {
                       {items.map((item) => (
                         <tr
                           key={item.id}
-                          className="hover:bg-orange-100 dark:hover:bg-gray-700"
+                          className="hover:bg-teal-100 dark:hover:bg-gray-700"
                         >
                           <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 capitalize whitespace-nowrap">
                             {item.meal_name}

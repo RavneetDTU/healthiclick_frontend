@@ -61,7 +61,7 @@ const ExercisePlanPdfPage = () => {
             <a
               href={pdfUrl}
               download={`exercise_plan_${user?.userid}.pdf`}
-              className="inline-block px-5 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
+              className="inline-block px-5 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition"
             >
               Download Exercise Plan
             </a>
