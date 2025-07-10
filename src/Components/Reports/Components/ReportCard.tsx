@@ -26,7 +26,7 @@ export default function ReportCard({ report }: ReportCardProps) {
       case "abnormal":
         return <AlertCircle className="h-5 w-5 text-red-500" />;
       case "pending":
-        return <Clock className="h-5 w-5 text-yellow-500" />;
+        return <Clock className="h-5 w-5 text-teal-500" />;
       default:
         return <FileText className="h-5 w-5 text-gray-400" />;
     }
@@ -104,7 +104,7 @@ export default function ReportCard({ report }: ReportCardProps) {
                 ${report.status === "abnormal" ? "bg-red-100 text-red-700" : ""}
                 ${
                   report.status === "pending"
-                    ? "bg-yellow-100 text-yellow-700"
+                    ? "bg-teal-200 text-white"
                     : ""
                 }
               `}
@@ -127,7 +127,7 @@ export default function ReportCard({ report }: ReportCardProps) {
                         : detail.status === "high"
                         ? "text-red-500"
                         : detail.status === "low"
-                        ? "text-yellow-500"
+                        ? "text-teal-500"
                         : "text-gray-700"
                     }`}
                   >

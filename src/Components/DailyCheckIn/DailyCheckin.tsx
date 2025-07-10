@@ -123,7 +123,7 @@ const DailyCheckIn = () => {
               </div>
 
               {isEditingPastDate && (
-                <div className="mb-4 p-3 bg-yellow-50 text-yellow-800 rounded-lg text-xs sm:text-sm">
+                <div className="mb-4 p-3 bg-teal-200 text-white rounded-lg text-xs sm:text-sm">
                   You`re editing data for a past date.
                 </div>
               )}
