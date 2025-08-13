@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image, { StaticImageData } from "next/image";
 import { useProfileStore } from "@/Components/UserProfile/store/userProfileStore";
+import { useDietPlanStore } from "@/Components/DietPlan/store/DietStore";
 import { useDevice } from "@/hooks/useDevice";
 import { BsCalendarDate } from "react-icons/bs";
 import { GrYoga } from "react-icons/gr";
@@ -11,18 +12,19 @@ import avtarImage from "@/images/assets/profile_avtar.png";
 import axios from "axios";
 import { DietSection } from "@/Components/DietPlan/store/DietStore";
 import { ExerciseSection } from "./ProfileExercise";
+import { useExerciseStore } from "@/Components/Exercise/store/ExerciseStore";
 
 export default function ProfileHeader() {
   const { user, setUser, setDialogOpen } = useProfileStore();
+  const {weekDay} = useDietPlanStore();
+  const { ExerciseWeekDay } = useExerciseStore();
+
   const { isMobile } = useDevice();
+
   const [hasMeals, setHasMeals] = useState(false);
   const [exerciseCount, setExerciseCount] = useState(0);
   const [mealCount, setMealCount] = useState(0);
-  const [weekDay] = useState<string>("Monday");
-  const [, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
+  const [, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
   // Fetch user profile data
   useEffect(() => {
@@ -32,9 +34,7 @@ export default function ProfileHeader() {
 
     axios
       .get(`${process.env.NEXT_PUBLIC_BASE_URL}/users/${user.userid}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
         const data = res.data;
@@ -52,15 +52,21 @@ export default function ProfileHeader() {
       .catch((err) => {
         console.error("Failed to fetch additional user info", err);
       });
-  }, [user?.userid]);
+  }, [user?.userid, setUser]);
 
-  // Fetch exercise plan data
+  // Fetch exercise plan data (per weekday)
   useEffect(() => {
+    let isActive = true;
+    const controller = new AbortController();
+
     const fetchExercises = async () => {
       const token = localStorage.getItem("token");
-      const weekdayLower = weekDay?.toLowerCase();
 
-      if (!user?.userid || !weekdayLower) return;
+      // 🔴 ISSUE (previous): No reset on weekday change -> stale truthy
+      // ✅ Fix: reset before fetch so buttons are visible until we confirm data
+      setExerciseCount(0);
+
+      if (!user?.userid || !ExerciseWeekDay) return;
       if (!token) {
         setToast({ message: "User not authenticated", type: "error" });
         return;
@@ -68,12 +74,13 @@ export default function ProfileHeader() {
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/exercise-plan/${user.userid}?weekday=${weekdayLower}`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/exercise-plan/${user.userid}?weekday=${ExerciseWeekDay}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
+            signal: controller.signal,
           }
         );
 
@@ -83,37 +90,51 @@ export default function ProfileHeader() {
         }
 
         const data: ExerciseSection[] = await response.json();
+        if (!isActive) return;
 
-        const exercisesExist = data.some(
-          (section) => section.elements && section.elements.length > 0
-        );
+        const exercisesExist =
+          Array.isArray(data) &&
+          data.some((section) => section.elements && section.elements.length > 0);
 
-        setExerciseCount(Number(exercisesExist)); // Convert boolean to number
+        setExerciseCount(exercisesExist ? 1 : 0);
       } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "Unknown error";
+        if (!isActive) return;
+        // Keep "Add Exercise" visible on failure
+        setExerciseCount(0);
+        const message = error instanceof Error ? error.message : "Unknown error";
         setToast({ message, type: "error" });
       }
     };
 
     fetchExercises();
-  }, [user?.userid, weekDay]);
 
-  // Fetch diet plan data
+    return () => {
+      isActive = false;
+      controller.abort();
+    };
+  }, [user?.userid, ExerciseWeekDay]);
+
+  // Fetch diet plan data (per weekday)
   useEffect(() => {
+    let isActive = true;
+    const controller = new AbortController();
+
     const fetchDietPlan = async () => {
       const token = localStorage.getItem("token");
-      const weekdayLower = weekDay?.toLowerCase();
+
+      // 🔴 ISSUE (previous): No reset on weekday change -> stale hasMeals=true
+      // ✅ Fix: reset immediately to avoid hiding button on a new day
+      setHasMeals(false);
+      setMealCount(0);
 
       if (!user?.userid || !weekDay || !token) return;
 
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/diet-plan/${user.userid}?weekday=${weekdayLower}`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/diet-plan/${user.userid}?weekday=${weekDay}`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
+            signal: controller.signal,
           }
         );
 
@@ -122,15 +143,21 @@ export default function ProfileHeader() {
         }
 
         const data: DietSection[] = await res.json();
+        if (!isActive) return;
 
-        // Check if data exists to decide if meals are available
-        const mealsExist = data.some(
-          (section) => section.elements && section.elements.length > 0
-        );
+        const mealsExist =
+          Array.isArray(data) &&
+          data.some((section) => section.elements && section.elements.length > 0);
 
-        setHasMeals(mealsExist); // Set hasMeals to true if meals exist
-        setMealCount(mealsExist ? 1 : 0); // Track meal count (1 if meals exist, 0 otherwise)
-      } catch (error: unknown) {
+        setHasMeals(mealsExist); // true only if meals exist for THIS day
+        setMealCount(mealsExist ? 1 : 0);
+      } catch (error) {
+        if (!isActive) return;
+
+        // Keep "Add Meal" visible on failure
+        setHasMeals(false);
+        setMealCount(0);
+
         if (error instanceof Error) {
           console.error("Diet plan fetch failed:", error);
           setToast({
@@ -144,6 +171,11 @@ export default function ProfileHeader() {
     };
 
     fetchDietPlan();
+
+    return () => {
+      isActive = false;
+      controller.abort();
+    };
   }, [weekDay, user?.userid]);
 
   if (!user) return null;
@@ -169,38 +201,35 @@ export default function ProfileHeader() {
             </div>
           </div>
 
-          <div className="flex-1 space-y-2">
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold">{user.name}</h1>
-              <span className="text-gray-500 dark:text-gray-400 text-sm pr-2">
-                {user.email}
-              </span>
-              <span className="text-gray-500 dark:text-gray-400 text-sm">
-                {user.phone}
-              </span>
+            <div className="flex-1 space-y-2">
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold">{user.name}</h1>
+                <span className="text-gray-500 dark:text-gray-400 text-sm pr-2">
+                  {user.email}
+                </span>
+                <span className="text-gray-500 dark:text-gray-400 text-sm">
+                  {user.phone}
+                </span>
+              </div>
+
+              <div className="flex flex-wrap gap-2 text-xs sm:text-sm">
+                <div className="flex items-center gap-1">
+                  <BsCalendarDate />
+                  <span>Member since {user.memberSince}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <GrYoga />
+                  <span>{exerciseCount} exercises</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <GiMeal />
+                  <span>{mealCount} meals</span>
+                </div>
+              </div>
             </div>
 
-            <div className="flex flex-wrap gap-2 text-xs sm:text-sm">
-              <div className="flex items-center gap-1">
-                <BsCalendarDate />
-                <span>Member since {user.memberSince}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <GrYoga />
-                <span>{exerciseCount} exercises</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <GiMeal />
-                <span>{mealCount} meals</span>
-              </div>
-            </div>
-          </div>
-
-          <div
-            className={`flex gap-2 mt-2 sm:mt-0 ${
-              isMobile ? "w-full flex flex-col" : ""
-            }`}
-          >
+          <div className={`flex gap-2 mt-2 sm:mt-0 ${isMobile ? "w-full flex flex-col" : ""}`}>
+            {/* Show "Add Meal" ONLY when there is NO meal for this weekday */}
             {!hasMeals && (
               <button
                 onClick={() => setDialogOpen("mealSeprate", true)}
@@ -209,7 +238,7 @@ export default function ProfileHeader() {
                 }`}
               >
                 <GiMeal />
-                Add Meal(Separetly)
+                Add Meal (Separately)
               </button>
             )}
 
@@ -220,10 +249,11 @@ export default function ProfileHeader() {
               }`}
             >
               <GiMeal />
-              Add Meal(Doc)
+              Add Meal (Doc)
             </button>
 
-            {!exerciseCount && (
+            {/* Show "Add Exercise" ONLY when there is NO exercise for this weekday */}
+            {exerciseCount === 0 && (
               <button
                 onClick={() => setDialogOpen("exercise", true)}
                 className={`flex items-center justify-center gap-2 px-3 py-2 text-sm bg-teal-100 text-black rounded-md hover:bg-teal-200 transition-colors ${

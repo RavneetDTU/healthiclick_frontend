@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useExerciseStore } from "./store/ExerciseStore";
+import { ExerciseWeekDays, useExerciseStore } from "./store/ExerciseStore";
 import { useProfileStore } from "../UserProfile/store/userProfileStore";
 import { Sidebar } from "@/shared/atoms/Sidebar";
 import { Header } from "@/shared/atoms/Header";
@@ -13,7 +13,7 @@ import Link from "next/link";
 import {
   fetchExercisePlan,
   fetchExercisePdfAvailability,
-  fetchExerciseLastUpdate,
+  // ❌ REMOVED: fetchExerciseLastUpdate
 } from "@/lib/api";
 
 interface ExerciseElement {
@@ -36,18 +36,8 @@ interface StructuredExercise extends ExerciseElement {
   category: string;
 }
 
-const weekDays = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
-
 export const ExercisePage = () => {
-  const { weekDay, setWeekDay } = useExerciseStore();
+  const { ExerciseWeekDay, setExerciseWeekDay } = useExerciseStore();
   const { user } = useProfileStore();
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -67,27 +57,26 @@ export const ExercisePage = () => {
 
   useEffect(() => {
     const fetchExercises = async (): Promise<void> => {
-      const weekdayLower = weekDay?.toLowerCase();
       const token = localStorage.getItem("token");
-  
-      if (!user?.userid || !weekdayLower || !token) {
+
+      if (!user?.userid || !ExerciseWeekDay || !token) {
         console.warn("⏳ Skipping fetch: missing userId, weekday, or token");
         return;
       }
-  
+
       try {
         const data: ExerciseSection[] = await fetchExercisePlan(
           user.userid,
-          weekdayLower,
+          ExerciseWeekDay
         );
-  
+
         if (data.length === 0) {
           console.warn("⚠️ API returned empty list, skipping state update");
           return;
         }
-  
+
         const structured: Record<string, StructuredExercise[]> = {};
-  
+
         data.forEach((section, sectionIndex) => {
           const category = section.name || `Session ${sectionIndex + 1}`;
           const entries: StructuredExercise[] = section.elements.map(
@@ -101,14 +90,14 @@ export const ExercisePage = () => {
               category,
             })
           );
-  
-          if (!structured[category]) {
+
+        if (!structured[category]) {
             structured[category] = entries;
           } else {
             structured[category] = [...structured[category], ...entries];
           }
         });
-  
+
         setStructuredExercises(structured);
       } catch (error) {
         const message =
@@ -121,45 +110,72 @@ export const ExercisePage = () => {
         setToast({ message, type: "error" });
       }
     };
-  
+
     fetchExercises();
-  }, [user?.userid, weekDay]);
-  
+  }, [user?.userid, ExerciseWeekDay]);
+
+  const extractLastUpdatedFromHeaders = (res: Response): string | null => {
+    const xLast = res.headers.get("x-last-modified");
+    const stdLast = res.headers.get("last-modified");
+    const xFile = res.headers.get("x-file-modified-date");
+    const raw: string | null = xLast || stdLast || xFile;
+    if (!raw) return null;
+
+    let d: Date | null = null;
+
+    if (raw === xFile) {
+      // Normalize "YYYY-MM-DD HH:mm:ss" to "YYYY-MM-DDTHH:mm:ss"
+      const normalized = raw.replace(" ", "T");
+      const tryDate = new Date(normalized);
+      d = isNaN(tryDate.getTime()) ? null : tryDate;
+    } else {
+      const tryDate = new Date(raw);
+      d = isNaN(tryDate.getTime()) ? null : tryDate;
+    }
+
+    if (!d) return null;
+
+    return d.toLocaleString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   useEffect(() => {
     const checkPdfAvailability = async () => {
-      if (!user?.userid) return;
-
-      try {
-        await fetchExercisePdfAvailability(user?.userid);
-        setPdfAvailable(true);
-      } catch (err) {
-        console.warn("❌ PDF not available" , err);
+      if (!user?.userid || !ExerciseWeekDay) {
         setPdfAvailable(false);
+        setLastUpdated(null);
+        return;
       }
 
       try {
-        const planData = await fetchExerciseLastUpdate(user?.userid);
-        const uploadedAt = planData?.[0]?.uploaded_at;
+        const res = (await fetchExercisePdfAvailability(
+          user.userid,
+          ExerciseWeekDay.toLowerCase() 
+        )) as Response;
 
-        if (uploadedAt) {
-          const dt = new Date(uploadedAt);
-          const formatted = dt.toLocaleString("en-US", {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          });
+        if (res && res.ok) {
+          setPdfAvailable(true);
+
+          const formatted = extractLastUpdatedFromHeaders(res);
           setLastUpdated(formatted);
+        } else {
+          setPdfAvailable(false);
+          setLastUpdated(null);
         }
       } catch (err) {
-        console.error("Error fetching last update:", err);
+        console.warn("❌ PDF not available", err);
+        setPdfAvailable(false);
+        setLastUpdated(null);
       }
     };
 
     checkPdfAvailability();
-  }, [user?.userid]);
+  }, [user?.userid, ExerciseWeekDay]);
 
   const handleTrackExercise = async (
     exerciseId: number,
@@ -193,17 +209,15 @@ export const ExercisePage = () => {
     setSelectedExercise(null);
   };
 
-
-  // If user is not logged in, show a message
-
   if (!user?.userid) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600">Please log in to view your exercise plan.</p>
+        <p className="text-gray-600">
+          Please log in to view your exercise plan.
+        </p>
       </div>
     );
   }
-
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f9fafb]">
@@ -222,11 +236,15 @@ export const ExercisePage = () => {
             </label>
             <select
               className="border rounded px-3 py-1 text-sm bg-white"
-              value={weekDay}
-              onChange={(e) => setWeekDay(e.target.value)}
+              value={ExerciseWeekDay}
+              onChange={(e) => {
+                setExerciseWeekDay(e.target.value);
+                setPdfAvailable(false);
+                setLastUpdated(null);
+              }}
             >
               <option value="">Choose a Day...</option>
-              {weekDays.map((day) => (
+              {ExerciseWeekDays.map((day) => (
                 <option key={day} value={day}>
                   {day}
                 </option>

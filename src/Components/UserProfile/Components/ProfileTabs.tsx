@@ -6,6 +6,8 @@ import { ProfileDietPlan } from "./ProfileDietPlan";
 import ProfileExercise from "./ProfileExercise";
 import ProfileReports from "./ProfileReports";
 import ProfileSession from "./ProfileSession";
+import ProfileMealPdf from "./ProfileMealPdf";
+import ProfileExercisePdf from "./ProfileExercisePdf";
 
 export default function ProfileTabs() {
   // const { user, appointments } = useProfileStore();
@@ -34,6 +36,27 @@ export default function ProfileTabs() {
             }`}
           >
             Exercise Plan
+          </button>
+          <button
+            onClick={() => setActiveTab("dietpdf")}
+            className={`px-4 py-3 text-sm font-medium transition-colors ${
+              activeTab === "dietpdf"
+                ? "border-b-2 border-teal-500 text-teal-600"
+                : "text-gray-500 hover:text-teal-500"
+            }`}
+          >
+            Diet Pdf
+          </button>
+
+          <button
+            onClick={() => setActiveTab("exercisepdf")}
+            className={`px-4 py-3 text-sm font-medium transition-colors ${
+              activeTab === "exercisepdf"
+                ? "border-b-2 border-teal-500 text-teal-600"
+                : "text-gray-500 hover:text-teal-500"
+            }`}
+          >
+            Exercise PDF
           </button>
 
           <button
@@ -81,6 +104,17 @@ export default function ProfileTabs() {
           </div>
         )}
 
+        {activeTab === "dietpdf" && (
+          <div>
+            <ProfileMealPdf />
+          </div>
+        )}
+
+        {activeTab === "exercisepdf" && (
+          <div>
+            <ProfileExercisePdf />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,34 +1,35 @@
-"use client"
+// Components/FilterBar.tsx
+"use client";
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import Button from "@/Components/ui/Button"
-import { Search, Filter, ChevronDown } from "lucide-react"
-import { useReportsStore } from "../store/reportsStore"
+import type React from "react";
+import { useState, useEffect } from "react";
+import Button from "@/Components/ui/Button";
+import { Search, Filter, ChevronDown } from "lucide-react";
+import { useReportsStore } from "../store/reportsStore";
 
 export default function FilterBar() {
-  const { filterReports } = useReportsStore()
-  const [searchTerm, setSearchTerm] = useState("")
-  const [showFilters, setShowFilters] = useState(false)
-  const [dateRange, setDateRange] = useState("all")
-  const [categories, setCategories] = useState<string[]>([])
+  const filterReports = useReportsStore((s) => s.filterReports);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  const [dateRange, setDateRange] = useState<"all" | "last30" | "last90" | "last365">("all");
+  const [categories, setCategories] = useState<string[]>([]);
 
   useEffect(() => {
-    filterReports({ searchTerm, dateRange, categories })
-  }, [filterReports, searchTerm, dateRange, categories])
+    filterReports({ searchTerm, dateRange, categories });
+  }, [filterReports, searchTerm, dateRange, categories]);
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    filterReports({ searchTerm, dateRange, categories })
-  }
+    e.preventDefault();
+    filterReports({ searchTerm, dateRange, categories });
+  };
 
   const toggleCategory = (category: string) => {
     if (categories.includes(category)) {
-      setCategories(categories.filter((c) => c !== category))
+      setCategories(categories.filter((c) => c !== category));
     } else {
-      setCategories([...categories, category])
+      setCategories([...categories, category]);
     }
-  }
+  };
 
   return (
     <div className="bg-white rounded-xl shadow p-4">
@@ -72,7 +73,7 @@ export default function FilterBar() {
                       ? "bg-teal-100 text-teal-800 border-teal-300"
                       : "bg-gray-100 text-gray-600 border-gray-200"
                   }`}
-                  onClick={() => setDateRange(option.value)}
+                  onClick={() => setDateRange(option.value as typeof dateRange)}
                 >
                   {option.label}
                 </button>
@@ -107,5 +108,5 @@ export default function FilterBar() {
         </div>
       )}
     </div>
-  )
+  );
 }

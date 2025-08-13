@@ -5,37 +5,29 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { useProfileStore } from "../store/userProfileStore"
 import { useDevice } from "@/hooks/useDevice"
 import { Toast } from "@/Components/ui/Toast"
-import { FaCamera } from "react-icons/fa"
+import { ExerciseWeekDays, useExerciseStore } from "@/Components/Exercise/store/ExerciseStore"
 
 export default function DocUploadExercise() {
   const { dialogOpen, setDialogOpen, user } = useProfileStore()
   const { isMobile } = useDevice()
   const [file, setFile] = useState<File | null>(null)
+  const { ExerciseWeekDay, setExerciseWeekDay } = useExerciseStore()
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null)
   const [isDragging, setIsDragging] = useState(false)
   const dialogRef = useRef<HTMLDivElement>(null)
   const dropAreaRef = useRef<HTMLDivElement>(null)
 
-  const validateAndSetFile = useCallback((file: File) => {
-    const validTypes = [
-      'image/jpeg',
-      'image/png',
-      'image/gif',
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    ]
-    
-    if (validTypes.includes(file.type)) {
-      setFile(file)
-    } else {
-      showToast("Invalid file type. Please upload an image, PDF, or Word document.", "error")
-    }
-  }, [])
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploaded = e.target.files?.[0] || null
     if (uploaded) validateAndSetFile(uploaded)
+  }
+
+  const validateAndSetFile = (file: File) => {
+    if (file.type === 'application/pdf') {
+      setFile(file)
+    } else {
+      showToast("Only PDF files are accepted.", "error")
+    }
   }
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
@@ -67,11 +59,13 @@ export default function DocUploadExercise() {
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       validateAndSetFile(e.dataTransfer.files[0])
     }
-  }, [validateAndSetFile])
+  }, [])
+
+  const selectedDay = ExerciseWeekDay.toLowerCase()
 
   const handleSave = async () => {
     if (!file) {
-      showToast("Please upload a document or image before saving.", "error")
+      showToast("Please upload a PDF file before saving.", "error")
       return
     }
 
@@ -87,13 +81,16 @@ export default function DocUploadExercise() {
     formData.append("file", file)
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/exercise-plan/${userId}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/daily-exercise-plan/${userId}/${selectedDay}`, 
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      )
 
       const responseText = await response.text()
       console.log("Upload response:", response.status, responseText)
@@ -102,12 +99,12 @@ export default function DocUploadExercise() {
         throw new Error(`Upload failed: ${response.status}`)
       }
 
-      showToast("Exercise uploaded successfully", "success")
+      showToast(`Exercise PDF for ${selectedDay} uploaded successfully`, "success")
       setFile(null)
       setDialogOpen("exerciseDoc", false)
     } catch (error) {
       console.error("Upload error:", error)
-      showToast("Failed to upload exercise document. Please try again.", "error")
+      showToast("Failed to upload exercise plan. Please try again.", "error")
     }
   }
 
@@ -143,9 +140,29 @@ export default function DocUploadExercise() {
           aria-modal="true"
         >
           <div className="p-5">
-            <h2 className="text-xl font-semibold text-teal-700 text-center mb-4">Upload Exercise Document</h2>
+            <h2 className="text-xl font-semibold text-teal-700 text-center mb-4">Upload Exercise PDF</h2>
 
             <div className="space-y-4">
+              {/* Weekday Selector */}
+              <div className="mb-4">
+                <label htmlFor="weekday" className="block text-sm font-medium text-gray-700 mb-1">
+                  Select Day of Week
+                </label>
+                <select
+                  id="weekday"
+                  value={selectedDay}
+                  onChange={(e) => setExerciseWeekDay(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+                >
+                  {ExerciseWeekDays?.map((day) => (
+                    <option key={day} value={day}>
+                      {day}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* File Upload Area */}
               <div
                 ref={dropAreaRef}
                 onDragEnter={handleDragEnter}
@@ -160,7 +177,7 @@ export default function DocUploadExercise() {
               >
                 <input
                   type="file"
-                  accept="image/*,.pdf,.doc,.docx"
+                  accept=".pdf"
                   onChange={handleFileChange}
                   className="hidden"
                   id="file-upload"
@@ -170,7 +187,7 @@ export default function DocUploadExercise() {
                   className="cursor-pointer flex flex-col items-center justify-center gap-2 min-h-[100px]"
                 >
                   {isDragging ? (
-                    <p className="text-teal-600 font-medium">Drop your file here</p>
+                    <p className="text-teal-600 font-medium">Drop your PDF file here</p>
                   ) : (
                     <>
                       <div className="w-10 h-10 border-2 border-dashed border-teal-400 rounded-full flex items-center justify-center">
@@ -185,30 +202,13 @@ export default function DocUploadExercise() {
                       </div>
                       <div>
                         <p className="text-teal-600 hover:text-teal-700 font-medium">
-                          Drag & drop a file or click to browse
+                          Drag & drop a PDF or click to browse
                         </p>
-                        <p className="text-sm text-gray-500 mt-1">Supported: Images, PDF, DOC, DOCX</p>
+                        <p className="text-sm text-gray-500 mt-1">Only PDF files are accepted</p>
                       </div>
                     </>
                   )}
                 </label>
-
-                <input
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={handleFileChange}
-                  className="hidden"
-                  id="camera-input"
-                />
-                <button
-                  type="button"
-                  onClick={() => document.getElementById("camera-input")?.click()}
-                  className="absolute top-2 right-2 p-1 text-teal-500 hover:text-teal-600"
-                  aria-label="Capture from camera"
-                >
-                  <FaCamera size={20} />
-                </button>
               </div>
 
               {file && (
@@ -225,19 +225,11 @@ export default function DocUploadExercise() {
                       Remove
                     </button>
                   </div>
-                  {file.type === "application/pdf" ? (
-                    <iframe
-                      src={URL.createObjectURL(file)}
-                      className="w-full h-64 border mt-2 rounded"
-                      title="PDF Preview"
-                    />
-                  ) : file.type.startsWith("image/") ? (
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt="Preview"
-                      className="w-full h-64 object-contain border mt-2 rounded"
-                    />
-                  ) : null}
+                  <iframe
+                    src={URL.createObjectURL(file)}
+                    className="w-full h-64 border mt-2 rounded"
+                    title="PDF Preview"
+                  />
                 </div>
               )}
             </div>

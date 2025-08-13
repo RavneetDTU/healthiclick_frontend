@@ -2,6 +2,16 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 // Types
+export const weekDays = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+];
+
 export interface User {
   userid: string;
   name: string;
@@ -51,11 +61,20 @@ interface DialogState {
 }
 
 interface ProfileState {
+  // Core data
   user: User;
   meals: Meal[];
   exercises: Exercise[];
   appointments: Appointment[];
+
+  // UI state
   dialogOpen: DialogState;
+
+  // Selected weekday state
+  weekDay: string;
+  setWeekDay: (day: string) => void;
+
+  // Actions
   setUser: (newUser: Partial<User>) => void;
   setDialogOpen: (type: keyof DialogState, isOpen: boolean) => void;
   addMeal: (meal: Meal) => void;
@@ -82,14 +101,16 @@ const mockMeals: Meal[] = [
     id: "1",
     meal_name: "Protein Smoothie",
     quantity: "1 serving (300ml)",
-    recipe: "Blend 1 banana, 1 scoop protein powder, 1 cup almond milk, and ice.",
+    recipe:
+      "Blend 1 banana, 1 scoop protein powder, 1 cup almond milk, and ice.",
     date: new Date(Date.now() - 86400000).toISOString(),
   },
   {
     id: "2",
     meal_name: "Grilled Chicken Salad",
     quantity: "1 bowl (350g)",
-    recipe: "Mix grilled chicken breast, lettuce, tomatoes, cucumber with olive oil dressing.",
+    recipe:
+      "Mix grilled chicken breast, lettuce, tomatoes, cucumber with olive oil dressing.",
     date: new Date(Date.now() - 172800000).toISOString(),
   },
 ];
@@ -112,40 +133,33 @@ const mockExercises: Exercise[] = [
 ];
 
 const mockAppointments: Appointment[] = [
-  {
-    id: "1",
-    title: "Fitness Assessment",
-    date: "Tomorrow, 10:00 AM",
-    type: "assessment",
-  },
-  {
-    id: "2",
-    title: "Nutrition Consultation",
-    date: "May 20, 2:30 PM",
-    type: "nutrition",
-  },
-  {
-    id: "3",
-    title: "Personal Training",
-    date: "May 22, 4:00 PM",
-    type: "training",
-  },
+  { id: "1", title: "Fitness Assessment", date: "Tomorrow, 10:00 AM", type: "assessment" },
+  { id: "2", title: "Nutrition Consultation", date: "May 20, 2:30 PM", type: "nutrition" },
+  { id: "3", title: "Personal Training", date: "May 22, 4:00 PM", type: "training" },
 ];
 
 // Persisted Zustand Store
 export const useProfileStore = create<ProfileState>()(
   persist(
     (set) => ({
+      // Data
       user: mockUser,
       meals: mockMeals,
       exercises: mockExercises,
       appointments: mockAppointments,
+
+      // UI
       dialogOpen: {
         mealSeprate: false,
         mealDoc: false,
         exercise: false,
         exerciseDoc: false,
       },
+
+      // Selected weekday — default Monday
+      weekDay: "monday",
+      setWeekDay: (day) => set({ weekDay: day }),
+      // Actions
       setUser: (newUser) =>
         set((state) => ({
           user: {
@@ -178,8 +192,9 @@ export const useProfileStore = create<ProfileState>()(
         })),
     }),
     {
-      name: "profile-storage", // Key in localStorage
-      partialize: (state) => ({ user: state.user }), // Only persist user
+      name: "profile-storage",
+      // Persist `user` and `weekDay` only
+      partialize: (state) => ({ user: state.user, weekDay: state.weekDay }),
     }
   )
 );

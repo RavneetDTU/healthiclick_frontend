@@ -1,3 +1,4 @@
+// Components/ReportCard.tsx
 "use client";
 
 import { useState } from "react";
@@ -11,13 +12,33 @@ import {
   Clock,
   Download,
 } from "lucide-react";
+import { getMedicalRecordPdf, deleteMedicalRecord } from "@/lib/api";
+import { useProfileStore } from "@/Components/UserProfile/store/userProfileStore";
+import { useReportsStore } from "../store/reportsStore";
+
+// Map UI category -> API recordType for endpoints
+const CATEGORY_TO_RECORDTYPE: Record<
+  Report["category"],
+  "lab_reports" | "diagnostic_reports" | "medical_certificates" | "vaccination_records"
+> = {
+  lab: "lab_reports",
+  imaging: "diagnostic_reports",
+  examination: "medical_certificates",
+  vaccination: "vaccination_records",
+};
 
 interface ReportCardProps {
   report: Report;
 }
 
 export default function ReportCard({ report }: ReportCardProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const { user } = useProfileStore();
+
+  const fetchReports = useReportsStore((s) => s.fetchReports);
+  const fetchAllReports = useReportsStore((s) => s.fetchAllReports);
+  const selectedRecordType = useReportsStore((s) => s.selectedRecordType);
 
   const getStatusIcon = () => {
     switch (report.status) {
@@ -45,30 +66,61 @@ export default function ReportCard({ report }: ReportCardProps) {
     }
   };
 
-  const handleDownload = (report: Report) => {
-    let content = `Report: ${report.name}\n`;
-    content += `Date: ${report.date}\n`;
-    content += `Status: ${getStatusText()}\n\n`;
-
-    if (report.details?.length) {
-      content += "Details:\n";
-      report.details.forEach((detail) => {
-        content += `- ${detail.name}: ${detail.value} ${detail.unit || ""} (${
-          detail.status
-        })\n`;
-      });
+  const openPdfInNewTab = async () => {
+    if (!user?.userid) return;
+    try {
+      const recordType = CATEGORY_TO_RECORDTYPE[report.category];
+      const res = await getMedicalRecordPdf(user.userid, recordType);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } catch (e) {
+      console.error("Failed to open PDF:", e);
     }
+  };
 
-    const blob = new Blob([content], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+  const handleDownload = async (r: Report) => {
+    if (!user?.userid) return;
+    try {
+      setDownloading(true);
+      const recordType = CATEGORY_TO_RECORDTYPE[r.category];
+      const res = await getMedicalRecordPdf(user.userid, recordType);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
 
-    link.href = url;
-    link.download = `${report.name.replace(/\s+/g, "_")}_${report.date}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+      link.href = url;
+      link.download = `${r.name.replace(/\s+/g, "_")}_${r.date}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error("Download failed:", e);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!user?.userid) return;
+    try {
+      setDeleting(true);
+      const recordType = CATEGORY_TO_RECORDTYPE[report.category];
+      await deleteMedicalRecord(user.userid, recordType);
+
+      // Refresh list after deletion
+      if (selectedRecordType) {
+        await fetchReports(selectedRecordType);
+      } else {
+        await fetchAllReports();
+      }
+    } catch (e) {
+      console.error("Delete failed:", e);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
@@ -96,17 +148,9 @@ export default function ReportCard({ report }: ReportCardProps) {
             <span
               className={`
                 px-2 py-1 rounded-full text-xs font-medium
-                ${
-                  report.status === "normal"
-                    ? "bg-green-100 text-green-700"
-                    : ""
-                }
+                ${report.status === "normal" ? "bg-green-100 text-green-700" : ""}
                 ${report.status === "abnormal" ? "bg-red-100 text-red-700" : ""}
-                ${
-                  report.status === "pending"
-                    ? "bg-teal-200 text-white"
-                    : ""
-                }
+                ${report.status === "pending" ? "bg-teal-200 text-white" : ""}
               `}
             >
               {getStatusText()}
@@ -114,60 +158,28 @@ export default function ReportCard({ report }: ReportCardProps) {
           </div>
         </div>
 
-        {isExpanded && (
-          <div className="mt-4 pt-4 border-t border-gray-100">
-            <div className="space-y-3">
-              {report.details?.map((detail, index) => (
-                <div key={index} className="flex justify-between text-sm">
-                  <span className="text-gray-600">{detail.name}</span>
-                  <span
-                    className={`font-medium ${
-                      detail.status === "normal"
-                        ? "text-green-500"
-                        : detail.status === "high"
-                        ? "text-red-500"
-                        : detail.status === "low"
-                        ? "text-teal-500"
-                        : "text-gray-700"
-                    }`}
-                  >
-                    {detail.value}{" "}
-                    {detail.unit && (
-                      <span className="text-xs text-gray-400">
-                        {detail.unit}
-                      </span>
-                    )}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
+        {/* Actions */}
         <div className="mt-4 flex flex-col sm:flex-row gap-2">
-          <Button
-            onClick={() => setIsExpanded(!isExpanded)}
-            variant="secondary"
-            className="flex-1"
-          >
-            {isExpanded ? "Hide Details" : "Show Details"}
-          </Button>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
-            <Button
-              onClick={() =>
-                window.open(`/api/reports/${report.id}/view`, "_blank")
-              }
-              className="w-full min-w-0" // Added min-w-0 to prevent overflow
-            >
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full">
+            <Button onClick={openPdfInNewTab} className="w-full min-w-0">
               View Report
             </Button>
             <Button
               onClick={() => handleDownload(report)}
               variant="outline"
               className="w-full flex items-center justify-center min-w-0"
+              disabled={downloading}
             >
               <Download className="h-4 w-4 mr-2" />
-              Download
+              {downloading ? "Downloading..." : "Download"}
+            </Button>
+            <Button
+              onClick={handleDelete}
+              variant="outline"
+              className="w-full min-w-0"
+              disabled={deleting}
+            >
+              {deleting ? "Deleting..." : "Delete"}
             </Button>
           </div>
         </div>

@@ -1,3 +1,4 @@
+// Reports.tsx
 "use client";
 
 import { useEffect } from "react";
@@ -10,11 +11,14 @@ import { Footer } from "@/shared/atoms/Footer";
 import UploadReportSection from "./Components/UploadReport";
 
 export default function ReportsPage() {
-  const { filteredReports, fetchReports, isLoading } = useReportsStore();
+  const filteredReports = useReportsStore((s) => s.filteredReports);
+  const fetchAllReports = useReportsStore((s) => s.fetchAllReports);
+  const isLoading = useReportsStore((s) => s.isLoading);
 
+  // Load the entire list on mount
   useEffect(() => {
-    fetchReports();
-  }, [fetchReports]);
+    fetchAllReports();
+  }, [fetchAllReports]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -50,25 +54,25 @@ export default function ReportsPage() {
                   <ReportSection
                     title="Lab Reports"
                     description="Blood work and laboratory test results"
-                    reports={filteredReports.filter((report) => report.category === "lab")}
+                    reports={filteredReports.filter((r) => r.category === "lab")}
                   />
 
                   <ReportSection
                     title="Imaging Reports"
                     description="X-rays, MRIs, CT scans and other imaging results"
-                    reports={filteredReports.filter((report) => report.category === "imaging")}
+                    reports={filteredReports.filter((r) => r.category === "imaging")}
                   />
 
                   <ReportSection
                     title="Medical Examinations"
                     description="Physical examinations and specialist consultations"
-                    reports={filteredReports.filter((report) => report.category === "examination")}
+                    reports={filteredReports.filter((r) => r.category === "examination")}
                   />
 
                   <ReportSection
                     title="Vaccination Records"
                     description="Immunization history and vaccination certificates"
-                    reports={filteredReports.filter((report) => report.category === "vaccination")}
+                    reports={filteredReports.filter((r) => r.category === "vaccination")}
                   />
                 </div>
               )}

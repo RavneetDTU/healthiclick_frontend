@@ -1,18 +1,20 @@
 "use client";
 
 import React, { useEffect } from "react";
-
 import FilterBar from "@/Components/Reports/Components/FilterBar";
 import ReportSection from "@/Components/Reports/Components/ReportSection";
 import UploadReportSection from "@/Components/Reports/Components/UploadReport";
 import { useReportsStore } from "@/Components/Reports/store/reportsStore";
 
 function ProfileReports() {
-  const { filteredReports, fetchReports, isLoading } = useReportsStore();
+  const { filteredReports, isLoading } = useReportsStore();
 
+  const fetchAllReports = useReportsStore((s) => s.fetchAllReports);
+
+  // Load the entire list on mount
   useEffect(() => {
-    fetchReports();
-  }, [fetchReports]);
+    fetchAllReports();
+  }, [fetchAllReports]);
 
   return (
     <div className="flex-1 overflow-hidden">
