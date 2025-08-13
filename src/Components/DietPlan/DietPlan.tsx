@@ -14,7 +14,6 @@ import Link from "next/link";
 import {
   fetchDietPlan,
   fetchDietPdfAvailability,
-  fetchDietLastUpdated,
 } from "@/lib/api";
 
 export const DietPlan = () => {
@@ -35,10 +34,13 @@ export const DietPlan = () => {
   useEffect(() => {
     const fetchPlan = async () => {
       if (!user?.userid || !weekDay) return;
-  
+
       try {
-        const data: DietSection[] = await fetchDietPlan(user.userid, weekDay.toLowerCase());
-  
+        const data: DietSection[] = await fetchDietPlan(
+          user.userid,
+          weekDay.toLowerCase()
+        );
+
         const structured = data.reduce(
           (
             acc: Record<string, MealItem[]>,
@@ -59,7 +61,7 @@ export const DietPlan = () => {
           },
           {}
         );
-  
+
         setMeals(structured);
         setHasMeals(Object.keys(structured).length > 0);
       } catch (error: unknown) {
@@ -74,41 +76,72 @@ export const DietPlan = () => {
         }
       }
     };
-  
+
     fetchPlan();
   }, [weekDay, user?.userid, setMeals]);
-  
+
+  const extractLastUpdatedFromHeaders = (res: Response): string | null => {
+    const xLast = res.headers.get("x-last-modified");
+    const stdLast = res.headers.get("last-modified");
+    const xFile = res.headers.get("x-file-modified-date");
+
+    const raw: string | null = xLast || stdLast || xFile;
+    if (!raw) return null;
+    let d: Date | null = null;
+
+    if (raw === xFile) {
+      const normalized = raw.replace(" ", "T");
+      const tryDate = new Date(normalized);
+      d = isNaN(tryDate.getTime()) ? null : tryDate;
+    } else {
+      const tryDate = new Date(raw);
+      d = isNaN(tryDate.getTime()) ? null : tryDate;
+    }
+
+    if (!d) return null;
+
+    // Format for display
+    return d.toLocaleString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   useEffect(() => {
     const checkPdfAvailability = async () => {
-      if (!user?.userid) return;
-  
+      if (!user?.userid || !weekDay) {
+        setPdfAvailable(false);
+        setLastUpdated(null);
+        return;
+      }
+
       try {
-        await fetchDietPdfAvailability(user.userid);
-        setPdfAvailable(true);
-  
-        const planData = await fetchDietLastUpdated(user.userid);
-        const uploadedAt = planData?.[0]?.uploaded_at;
-  
-        if (uploadedAt) {
-          const dt = new Date(uploadedAt);
-          const formatted = dt.toLocaleString("en-US", {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          });
+        const res = (await fetchDietPdfAvailability(
+          user.userid,
+          weekDay.toLowerCase()
+        )) as Response;
+
+        if (res && res.ok) {
+          setPdfAvailable(true);
+
+          const formatted = extractLastUpdatedFromHeaders(res);
           setLastUpdated(formatted);
+        } else {
+          setPdfAvailable(false);
+          setLastUpdated(null);
         }
       } catch (err) {
-        console.error("PDF check failed:", err);
+        console.warn("❌ PDF not available", err);
         setPdfAvailable(false);
+        setLastUpdated(null);
       }
     };
-  
+
     checkPdfAvailability();
-  }, [user?.userid]);  
+  }, [user?.userid, weekDay]);
 
   const handleTrackMeal = async (
     meal_id: number,
@@ -155,7 +188,11 @@ export const DietPlan = () => {
             <select
               className="border rounded px-3 py-1 text-sm bg-white"
               value={weekDay}
-              onChange={(e) => setWeekDay(e.target.value)}
+              onChange={(e) => {
+                setWeekDay(e.target.value);
+                setPdfAvailable(false);
+                setLastUpdated(null);
+              }}
             >
               <option value="">Choose a Day...</option>
               {weekDays.map((day) => (

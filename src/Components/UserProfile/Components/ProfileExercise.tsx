@@ -5,7 +5,7 @@ import { Toast } from "@/Components/ui/Toast";
 import EditPopup from "@/Components/EditPopUpComponent/EditPopUp";
 import { weekDays } from "@/Components/DietPlan/store/DietStore";
 import { useProfileStore } from "../store/userProfileStore";
-import { useDietPlanStore } from "@/Components/DietPlan/store/DietStore";
+import { useExerciseStore } from "@/Components/Exercise/store/ExerciseStore";
 
 export interface ExerciseElement {
   exercise_name: string;
@@ -30,7 +30,7 @@ export interface StructuredExercise extends ExerciseElement {
 
 function ProfileExercise() {
   const { user } = useProfileStore();
-  const { weekDay, setWeekDay } = useDietPlanStore();
+  const { ExerciseWeekDay, setExerciseWeekDay } = useExerciseStore();
 
   const [structuredExercises, setStructuredExercises] = useState<
     Record<string, StructuredExercise[]>
@@ -53,7 +53,7 @@ function ProfileExercise() {
   const handleEditSave = async (
     updatedData: Record<string, StructuredExercise[]>
   ) => {
-    if (!user?.userid || !weekDay) {
+    if (!user?.userid || !ExerciseWeekDay) {
       setToast({ message: "Missing user or weekday info", type: "error" });
       return;
     }
@@ -64,7 +64,7 @@ function ProfileExercise() {
       ([category, items]) => ({
         name: category,
         time: new Date().toISOString(), // Adjust if needed
-        weekday: weekDay,
+        weekday: ExerciseWeekDay,
         elements: items.map((item) => ({
           exercise_name: item.exercise_name,
           duration: item.duration,
@@ -78,7 +78,7 @@ function ProfileExercise() {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/admin/exercises?user_id=${
           user.userid
-        }&weekday=${weekDay.toLowerCase()}`,
+        }&weekday=${ExerciseWeekDay}`,
         {
           method: "PUT",
           headers: {
@@ -108,9 +108,8 @@ function ProfileExercise() {
   useEffect(() => {
     const fetchExercises = async (): Promise<void> => {
       const token = localStorage.getItem("token");
-      const weekdayLower = weekDay?.toLowerCase();
 
-      if (!user?.userid || !weekdayLower) {
+      if (!user?.userid || !ExerciseWeekDay) {
         console.warn("⏳ Skipping fetch: missing userId or weekday");
         return;
       }
@@ -120,7 +119,7 @@ function ProfileExercise() {
         return;
       }
 
-      const apiUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/exercise-plan/${user.userid}?weekday=${weekdayLower}`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/exercise-plan/${user.userid}?weekday=${ExerciseWeekDay}`;
 
       try {
         const response = await fetch(apiUrl, {
@@ -175,7 +174,7 @@ function ProfileExercise() {
     };
 
     fetchExercises();
-  }, [user?.userid, weekDay]);
+  }, [user?.userid, ExerciseWeekDay]);
 
   return (
     <div className="h-fit bg-gray-50">
@@ -188,8 +187,8 @@ function ProfileExercise() {
           </label>
           <select
             className="border rounded px-3 py-1 text-sm bg-white"
-            value={weekDay}
-            onChange={(e) => setWeekDay(e.target.value)}
+            value={ExerciseWeekDay}
+            onChange={(e) => setExerciseWeekDay(e.target.value)}
           >
             <option value="">Choose a Day...</option>
             {weekDays.map((day) => (

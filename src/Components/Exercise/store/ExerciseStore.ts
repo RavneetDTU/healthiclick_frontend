@@ -10,19 +10,29 @@ export interface Exercise {
   created_at: string;
 }
 
+export const ExerciseWeekDays = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+];
+
 interface ExerciseState {
-  weekDay: string;
+  ExerciseWeekDay: string;
   exercisesByDay: Record<string, Exercise[]>;
-  setWeekDay: (day: string) => void;
+  setExerciseWeekDay: (day: string) => void;
   setExercisesByDay: (
     updater: (prev: Record<string, Exercise[]>) => Record<string, Exercise[]>
   ) => void;
 }
 
 export const useExerciseStore = create<ExerciseState>((set) => ({
-  weekDay: "Monday",
+  ExerciseWeekDay: "monday",
   exercisesByDay: {},
-  setWeekDay: (day) => set({ weekDay: day }),
+  setExerciseWeekDay: (day) => set({ ExerciseWeekDay: day }),
   setExercisesByDay: (updater) =>
     set((state) => ({
       exercisesByDay: updater(state.exercisesByDay),

@@ -22,13 +22,13 @@ export interface DietSection {
 }
 
 export const weekDays = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
 ];
 
 export interface DietPlanState {
@@ -40,7 +40,7 @@ export interface DietPlanState {
 }
 
 export const useDietPlanStore = create<DietPlanState>((set) => ({
-  weekDay: 'Monday',
+  weekDay: 'monday',
   meals: {},
   setWeekDay: (day) => set({ weekDay: day }),
   setMeals: (data) => set({ meals: data }),

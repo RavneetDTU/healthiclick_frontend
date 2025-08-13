@@ -2,17 +2,16 @@
 
 import React, { useEffect, useState } from "react";
 import { useDietPlanStore } from "@/Components/DietPlan/store/DietStore";
-import { useProfileStore } from "../store/userProfileStore";
 import { Toast } from "@/Components/ui/Toast";
 import {
   DietSection,
-  weekDays,
   MealItem,
 } from "@/Components/DietPlan/store/DietStore";
 import EditPopup from "@/Components/EditPopUpComponent/EditPopUp";
+import { useProfileStore, weekDays } from "../store/userProfileStore";
 
 export const ProfileDietPlan = () => {
-  const { weekDay, meals, setWeekDay, setMeals } = useDietPlanStore();
+  const {weekDay, meals, setWeekDay, setMeals } = useDietPlanStore();
   const { user } = useProfileStore();
   const [editPopupOpen, setEditPopupOpen] = useState(false);
   const [editInitialData, setEditInitialData] = useState<

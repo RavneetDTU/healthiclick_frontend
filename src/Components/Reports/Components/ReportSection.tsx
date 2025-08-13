@@ -1,14 +1,15 @@
-import type { Report } from "../types/reports"
-import ReportCard from "./ReportCard"
+// Components/ReportSection.tsx
+import type { Report } from "../types/reports";
+import ReportCard from "./ReportCard";
 
 interface ReportSectionProps {
-  title: string
-  description: string
-  reports: Report[]
+  title: string;
+  description: string;
+  reports: Report[];
 }
 
 export default function ReportSection({ title, description, reports }: ReportSectionProps) {
-  if (reports.length === 0) return null
+  if (reports.length === 0) return null;
 
   return (
     <section className="bg-white rounded-xl shadow overflow-hidden">
@@ -29,5 +30,5 @@ export default function ReportSection({ title, description, reports }: ReportSec
         )}
       </div>
     </section>
-  )
+  );
 }
