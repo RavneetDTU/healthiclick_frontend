@@ -1,0 +1,37 @@
+# This project is a Next.js (Node/TypeScript) frontend.
+
+# Frontend Runtime (Node ecosystem, NOT pip):
+next==<version>
+react==<version>
+react-dom==<version>
+typescript==<version>
+@types/react==<version>
+@types/node==<version>
+
+# Styling
+tailwindcss==<version>
+postcss==<version>
+autoprefixer==<version>
+
+# State Management
+zustand==<version>
+
+# HTTP / Utilities
+axios==<version>
+
+# Scheduling / Widgets
+react-calendly==<version>
+
+# Icons
+react-icons==<version>
+
+# Tooling / Lint (add if present)
+eslint==<version>
+eslint-config-next==<version>
+prettier==<version>
+
+# Testing (add if you integrate)
+jest==<version>
+@testing-library/react==<version>
+@testing-library/jest-dom==<version>
+vitest==<version>
